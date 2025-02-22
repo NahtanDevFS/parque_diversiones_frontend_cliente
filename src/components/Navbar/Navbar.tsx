@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react'
-import { NavbarMenu } from '@/app/mockData/data';
-import styles from '@/app/components/Navbar/Navbar.module.css';
+import { NavbarMenu } from '@/mockData/data';
+import styles from '@/components/Navbar/Navbar.module.css';
 import { MdMenu } from 'react-icons/md';
 import ResponsiveMenu from './ResponsiveMenu';
 
@@ -15,10 +15,10 @@ export const Navbar = () => {
         <nav>
             <div className={styles.container}>
                 {/* Logo */}
-                <div className={styles.logo}>
+                <a href='/' className={styles.logo}>
                     <p>Oriente</p>
                     <p className={styles.logo_text_color}>Magico</p>
-                </div>
+                </a>
                 {/* menu */}
                     <div>
                         <ul className={styles.list}>
@@ -30,8 +30,9 @@ export const Navbar = () => {
                         </ul>
                     </div>
                 {/* user */}
-                <div>
+                <div className={styles.user_container}>
                     <button className={styles.button}>Iniciar sesión</button>
+                    <button className={styles.button}>Registrarme</button>
                 </div>
                 {/* mobile menu button */}
                 <div className={styles.mobile_menu}>

@@ -1,0 +1,28 @@
+.button {
+    background-color: rgba(255, 157, 0, 1);
+    color: #000; /* Texto blanco */
+    border: none; /* Sin borde */
+    padding: 8px 10px; /* Espaciado interno */
+    font-size: 14px; /* Tamaño de fuente */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de puntero */
+    transition: background-color 0.3s ease; /* Transición suave */
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    max-width: 200px;
+  }
+  
+  .button:hover {
+    background-color: rgba(255, 115, 0, 1); /* Cambia el color al pasar el mouse */
+  }
+  
+  .button:disabled {
+    background-color: #cccccc; /* Color gris cuando está deshabilitado */
+    cursor: not-allowed; /* Cambia el cursor */
+  }
+
+  @media (max-width: 900px) {
+    .button {
+      max-width: 150px;
+    }
+  }

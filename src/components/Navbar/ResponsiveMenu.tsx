@@ -21,13 +21,16 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open }) => {
                             <a href="/">Inicio</a>
                         </li>
                         <li>
-                            <a href="#">Comprar</a>
+                            <a href="/comprar">Comprar</a>
                         </li>
                         <li>
-                            <a href="#">Mis tickets</a>
+                            <a href="/mis_tickets">Mis tickets</a>
                         </li>
                         <li>
-                            <a href="#">Eventos</a>
+                            <a href="/eventos">Eventos</a>
+                        </li>
+                        <li>
+                            <a href="/login">Iniciar sesión</a>
                         </li>
                     </ul>
                 </div>

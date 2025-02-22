@@ -10,18 +10,18 @@ export const NavbarMenu = [
     {
         id: 2,
         title: 'Comprar',
-        link: '#',
+        link: '/comprar',
 
     },
     {
         id: 3,
         title: 'Mis tickets',
-        link: '#',
+        link: '/mis_tickets',
 
     },
     {
         id: 4,
         title: 'Eventos',
-        link: '#',
+        link: '/eventos',
     }
 ]

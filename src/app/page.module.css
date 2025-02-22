@@ -1,168 +1,191 @@
-.page {
-  --gray-rgb: 0, 0, 0;
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
-  --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-
-  display: grid;
-  grid-template-rows: 20px 1fr 20px;
-  align-items: center;
-  justify-items: center;
-  min-height: 100svh;
-  padding: 80px;
-  gap: 64px;
-  font-family: var(--font-geist-sans);
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-  }
-}
-
 .main {
+  background-color: rgba(255, 186, 8, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  grid-row-start: 2;
-}
-
-.main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
-  margin: 0;
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.01em;
-  list-style-position: inside;
-}
-
-.main li:not(:last-of-type) {
-  margin-bottom: 8px;
-}
-
-.main code {
-  font-family: inherit;
-  background: var(--gray-alpha-100);
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.ctas {
-  display: flex;
-  gap: 16px;
-}
-
-.ctas a {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  border: none;
-  border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-  cursor: pointer;
-  display: flex;
   align-items: center;
+  z-index: -1;
+}
+
+.section1_container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: #000;
+  width: 100%;
+  height: auto;
+  position: relative; /* Asegura que los hijos puedan usar z-index */
+}
+
+.welcome_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1; /* Coloca la imagen detrás */
+  position: absolute; /* Posiciona la imagen absolutamente dentro del contenedor */
+  top: 0;
+  left: 0;
+}
+
+.card_container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
+  padding: 3%;
+  width: 50%;
+  height: 65%;
+  margin-left: 10%;
+  margin-top: 10%;
+  margin-bottom: 7%;
+  background-color: rgba(254, 228, 64, 0.9);
+  border-radius: 1em;
+  z-index: 1; /* Coloca la tarjeta por encima */
+  position: relative; /* Asegura que el z-index funcione */
 }
 
-a.primary {
-  background: var(--foreground);
-  color: var(--background);
-  gap: 8px;
+.section2_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2%;
+  gap: 20px;
+  color: #000;
+  max-width: 70%;
+  margin-bottom: 5%;
+  height: auto;
+  position: relative; /* Asegura que los hijos puedan usar z-index */
 }
 
-a.secondary {
-  border-color: var(--gray-alpha-200);
-  min-width: 180px;
+.section2_h1 {
+  font-size: 3rem;
+}
+
+.section2_p {
+  font-size: 1.5rem;
+}
+
+.section2_dl {
+  margin-top: 4rem; /* mt-16 -> 16 * 0.25rem = 4rem */
+  display: grid;
+  grid-template-columns: 1fr; /* grid-cols-1 -> Una columna */
+  gap: 0.125rem; /* gap-0.5 -> 0.5 * 0.25rem = 0.125rem */
+  overflow: hidden; /* overflow-hidden */
+  border-radius: 1rem; /* rounded-2xl -> 2xl = 1rem */
+  text-align: center; /* text-center */
+}
+
+.section2_information {
+  display: flex; 
+  flex-direction: column; 
+  background-color: rgba(254, 228, 64, 0.9);
+  padding: 2rem;
+}
+
+.section3_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  width: 100%;
+}
+
+.section3_h1 {
+  font-size: 3rem;
+  margin-bottom: 4%;
+}
+
+.footer_container {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 157, 0, 1);
+  width: 100%;
+  height: auto;
+}
+
+.footer_title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
 }
 
 .footer {
-  grid-row-start: 3;
   display: flex;
-  gap: 24px;
-}
-
-.footer a {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  padding: 2rem;
 }
 
-.footer img {
-  flex-shrink: 0;
+.footer_column {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15%;
+  margin-right: 15%;
+  gap: 1rem;
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
-
-  .footer a:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
+.footer_row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-@media (max-width: 600px) {
-  .page {
-    padding: 32px;
-    padding-bottom: 80px;
+.footer_row strong {
+  font-weight: bold;
+}
+
+.footer_row span {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .card_container {
+    width: 70%;
+  }
+  .section1_container {
+    justify-content: center;
   }
 
-  .main {
-    align-items: center;
+  .section1_h1 {
+    font-size: 1.5rem;
   }
 
-  .main ol {
-    text-align: center;
+  .section1_h3 {
+    font-size: 1rem;
   }
 
-  .ctas {
-    flex-direction: column;
+  .section1_p {
+    font-size: 0.8rem;
   }
 
-  .ctas a {
-    font-size: 14px;
-    height: 40px;
-    padding: 0 16px;
+  .section2_h1 {
+    font-size: 2rem;
   }
-
-  a.secondary {
-    min-width: auto;
+  
+  .section2_p {
+    font-size: 1rem;
   }
 
   .footer {
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer_column {
+    align-items: flex-start;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
+@media (min-width: 640px) {
+  .section2_dl {
+    grid-template-columns: repeat(2, 1fr); /* sm:grid-cols-2 -> Dos columnas */
+  }
+}
+
+/* Media query para pantallas grandes (lg) */
+@media (min-width: 1024px) {
+  .section2_dl {
+    grid-template-columns: repeat(4, 1fr); /* lg:grid-cols-4 -> Cuatro columnas */
   }
 }
