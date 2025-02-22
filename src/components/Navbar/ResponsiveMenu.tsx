@@ -32,6 +32,9 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open }) => {
                         <li>
                             <a href="/login">Iniciar sesión</a>
                         </li>
+                        <li>
+                            <a href="/registro">Registrame</a>
+                        </li>
                     </ul>
                 </div>
             </motion.div>)}
