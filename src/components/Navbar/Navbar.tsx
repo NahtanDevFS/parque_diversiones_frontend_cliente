@@ -5,6 +5,7 @@ import { NavbarMenu } from '@/mockData/data';
 import styles from '@/components/Navbar/Navbar.module.css';
 import { MdMenu } from 'react-icons/md';
 import ResponsiveMenu from './ResponsiveMenu';
+import Link from 'next/link';
 
 export const Navbar = () => {
 
@@ -15,16 +16,16 @@ export const Navbar = () => {
         <nav>
             <div className={styles.container}>
                 {/* Logo */}
-                <a href='/' className={styles.logo}>
+                <Link href='/' className={styles.logo}>
                     <p>Oriente</p>
                     <p className={styles.logo_text_color}>Magico</p>
-                </a>
+                </Link>
                 {/* menu */}
                     <div>
                         <ul className={styles.list}>
                             {NavbarMenu.map((item) => (
                                 <li key={item.id}>
-                                    <a href={item.link}>{item.title}</a>
+                                    <Link href={item.link}>{item.title}</Link>
                                 </li>
                             ))}
                         </ul>

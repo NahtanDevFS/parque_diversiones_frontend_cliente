@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
-import { style } from "motion/react-client";
 import styles from "./Navbar.module.css";
 import React from "react";
+import Link from "next/link";
 
 interface ResponsiveMenuProps {
   open: boolean;
@@ -18,22 +18,22 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open }) => {
                 <div className={styles.responsive_menu_container}>
                     <ul className={styles.responsive_list}>
                         <li>
-                            <a href="/">Inicio</a>
+                            <Link href="/">Inicio</Link>
                         </li>
                         <li>
-                            <a href="/comprar">Comprar</a>
+                            <Link href="/comprar">Comprar</Link>
                         </li>
                         <li>
-                            <a href="/mis_tickets">Mis tickets</a>
+                            <Link href="/mis_tickets">Mis tickets</Link>
                         </li>
                         <li>
-                            <a href="/eventos">Eventos</a>
+                            <Link href="/eventos">Eventos</Link>
                         </li>
                         <li>
-                            <a href="/login">Iniciar sesión</a>
+                            <Link href="/login">Iniciar sesión</Link>
                         </li>
                         <li>
-                            <a href="/registro">Registrame</a>
+                            <Link href="/registro">Registrame</Link>
                         </li>
                     </ul>
                 </div>

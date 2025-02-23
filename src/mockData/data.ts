@@ -1,5 +1,3 @@
-import { link } from "fs";
-
 export const NavbarMenu = [
     {
         id: 1,
