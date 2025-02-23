@@ -29,7 +29,7 @@ export default function Home() {
           <h1 className={styles.section2_h1}>Planifica Tu Visita</h1>
           <p className={styles.section2_p}>Conoce nuestros horarios y prepárate para una jornada llena de diversión en Oriente Mágico.</p>
           <dl className={styles.section2_dl}>
-            <div className={styles.section2_information}><dt><h1>Lunes a Domingo</h1></dt><dd><p>Dias de operación</p></dd></div>
+            <div className={styles.section2_information}><dt><h1>Martes a Domingo</h1></dt><dd><p>Dias de operación</p></dd></div>
             <div className={styles.section2_information}><dt><h1>9:00 AM</h1></dt><dd><p>Hora de apertura</p></dd></div>
             <div className={styles.section2_information}><dt><h1>6:00 PM</h1></dt><dd><p>Hora de Cierre</p></dd></div>
             <div className={styles.section2_information}><dt><h1>5</h1></dt><dd><p>Atracciones disponibles</p></dd></div>
