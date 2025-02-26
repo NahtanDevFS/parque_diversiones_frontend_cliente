@@ -1,11 +1,14 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import styles from './page.module.css';
 import { signup } from '../actions';
 
 export default function Registro() {
+
+    //const [errorMessage, setErrorMessage] = useState<string | null>(null); // Estado para manejar mensajes de error
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -18,13 +21,13 @@ export default function Registro() {
     }
 
     // Enviar datos al servidor
-    const success = await signup(formData); // Ahora devuelve true o false
+    const {success, message} = await signup(formData); // Ahora devuelve true o false
     if (success) {
       alert('Registro exitoso');
       // Redirigir a otra página si es necesario
       window.location.href = '/';
     } else {
-      alert('Error en el registro, intenta nuevamente.');
+        alert(message ?? 'error desconcido'); // Establecer el mensaje de error en el estado
     }
   };
 

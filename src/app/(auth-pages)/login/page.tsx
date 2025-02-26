@@ -6,14 +6,19 @@ import styles from './page.module.css';
 import { login } from '../actions';
 
 export default function loginPage() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+    const formData = new FormData(e.target as HTMLFormElement);
 
-    // Aquí puedes agregar la lógica para enviar los datos al servidor
-    console.log('Datos del formulario:', data);
-    alert('Inicio de sesión exitoso');
+    const {success, message} = await login(formData); // Ahora devuelve true o false
+      if (success) {
+        alert('Inicio de sesión exitoso');
+        // Redirigir a otra página si es necesario
+        window.location.href = '/';
+      } else {
+          alert(message ?? 'error desconcido'); // Establecer el mensaje de error en el estado
+      }
+    
   };
 
   return (
@@ -35,7 +40,7 @@ export default function loginPage() {
 
         {/* Botón de Registro */}
         <div className={styles.buttonContainer}>
-            <button formAction={login} type="submit">Iniciar sesión</button>
+            <button type="submit">Iniciar sesión</button>
         </div>
 
         {/* Enlace para iniciar sesión */}

@@ -16,11 +16,13 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/error')
+    return { success: false, message: error?.message };
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/')
+  return { success: true };
+
+  // revalidatePath('/', 'layout')
+  // redirect('/')
 }
 
 export async function signup(formData: FormData) {
@@ -42,8 +44,7 @@ export async function signup(formData: FormData) {
 
   if (authError || !authData.user) {
     // redirect('/error')
-    console.log('Error en Auth:', authError)
-    return false;
+    return { success: false, message: authError?.message };
   }
 
   // 2️⃣ Obtener ID de usuario generado por Auth
@@ -67,10 +68,10 @@ export async function signup(formData: FormData) {
   if (insertError) {
     // redirect('/error')
     console.log('Error en Insert:', insertError)
-    return false;
+    return { success: false, message: insertError.message }; // Devolver el mensaje de error
   }
 
-  return true;
+  return { success: true }; // Registro exitoso
 
   revalidatePath('/', 'layout')
   redirect('/')
