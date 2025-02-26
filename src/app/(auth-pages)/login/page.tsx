@@ -6,16 +6,10 @@ import styles from './page.module.css';
 import { login } from '../actions';
 
 export default function loginPage() {
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
-
-    // Validación básica
-    // if (data.password !== data.confirmPassword) {
-    //   alert('Las contraseñas no coinciden');
-    //   return;
-    // }
 
     // Aquí puedes agregar la lógica para enviar los datos al servidor
     console.log('Datos del formulario:', data);
