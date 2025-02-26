@@ -32,8 +32,12 @@ export const Navbar = () => {
                     </div>
                 {/* user */}
                 <div className={styles.user_container}>
-                    <button className={styles.button}>Iniciar sesión</button>
-                    <button className={styles.button}>Registrarme</button>
+                    <Link href='/login'>
+                        <button type='button' className={styles.button}>Iniciar sesión</button>
+                    </Link>
+                    <Link href='/registro'>
+                        <button type='button' className={styles.button}>Registrarme</button>
+                    </Link>
                 </div>
                 {/* mobile menu button */}
                 <div className={styles.mobile_menu}>

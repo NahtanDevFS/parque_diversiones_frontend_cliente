@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "bcryptjs": "^3.0.2",
     "motion": "^12.4.5",
     "next": "15.1.7",
     "react": "^19.0.0",
