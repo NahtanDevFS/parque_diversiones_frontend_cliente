@@ -41,9 +41,9 @@ export default function Home() {
           <h1 className={styles.section3_h1}>Atracciones</h1>
           <Attraction src_img="el-cactus-rotador.png" title="El Cactus Rotador" description="Un carrousel que va con la temática cálida y animada del parque de diversions. Disponible para personas de todas las edades. !Compra ya tu ticket!"/>
           <Attraction src_img="el-toro-de-tierra-caliente.png" title="El Toro de Tierra Caliente" description="Un toro mecánico adornado con los colores de la vestimenta típica guatemalteca, para sentirte todo un vaquero zacapaneco. No apto para niños, !Compra ya tu ticket!"/>
-          <Attraction src_img="el-trenecito-de-chiquimula.png" title="El Trenecito de Chiquimula" description="Ven y dale una vuelta al parque en el Trenecito de Chiquimula y siente el ambiente de oriente. Disponible para personas de todas las edades, !Compra ya tu ticket!"/>
+          <Attraction src_img="trenecito-fragua.jpeg" title="El Trenecito de la Fragua" description="Ven y dale una vuelta al parque en el Trenecito de la Fragua y siente el ambiente de oriente. Disponible para personas de todas las edades, !Compra ya tu ticket!"/>
           <Attraction src_img="los-tuc-tucs-chocones.jpeg" title="Los Tuc-tucs chocones" description="Siéntete parte de la cultura oriental de Guatemala subiéndote a nuestros tuc-tucs chocones, donde podrás disfrutar de gratas experiencias. Los niños con supervisón de un adulto, !Compra ya tu ticket!"/>
-          <Attraction src_img="montania-ipala.jpeg" title="La Montaña Ipala" description="¿Eres amante de lo extremo? Entonces tenemos lo ideal para ti, una montaña rusa que va alrededor de una réplica a escala del volcán de Ipala, para que sientas la verdadera adrenalina. No apto para niños, !Compra ya tu ticket!"/>
+          <Attraction src_img="montana-la-union.jpeg" title="La Montaña de La Unión" description="¿Eres amante de lo extremo? Entonces tenemos lo ideal para ti, una montaña rusa que va alrededor de una réplica a escala de una de las altas montañas de La Unión, para que sientas la verdadera adrenalina. No apto para niños, !Compra ya tu ticket!"/>
         </div>
       </main>
       <footer className={styles.footer_container}>
