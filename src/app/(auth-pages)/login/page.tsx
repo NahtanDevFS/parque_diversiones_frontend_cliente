@@ -16,7 +16,7 @@ export default function loginPage() {
         // Redirigir a otra página si es necesario
         window.location.href = '/';
       } else {
-          alert(message ?? 'error desconcido'); // Establecer el mensaje de error en el estado
+          alert(message ?? 'error desconocido'); // Establecer el mensaje de error en el estado
       }
     
   };
@@ -46,7 +46,7 @@ export default function loginPage() {
         {/* Enlace para iniciar sesión */}
         <p>
           ¿Olvidaste tu contraseña?{' '}
-          <a href="/login" className={styles.loginLink}>
+          <a href="/forgot-password" className={styles.loginLink}>
             Haz clic aquí
           </a>
         </p>

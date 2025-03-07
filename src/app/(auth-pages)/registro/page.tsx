@@ -27,7 +27,7 @@ export default function Registro() {
       // Redirigir a otra página si es necesario
       window.location.href = '/';
     } else {
-        alert(message ?? 'error desconcido'); // Establecer el mensaje de error en el estado
+        alert(message ?? 'error desconocido'); // Establecer el mensaje de error en el estado
     }
   };
 
