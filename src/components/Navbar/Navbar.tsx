@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavbarMenu } from '@/mockData/data';
 import styles from '@/components/Navbar/Navbar.module.css';
-import { MdMenu, MdAccountCircle } from 'react-icons/md';
+import { MdMenu, MdAccountCircle, MdExitToApp, MdClose } from 'react-icons/md';
 import ResponsiveMenu from './ResponsiveMenu';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
@@ -17,6 +17,8 @@ export const Navbar = () => {
 
     const [open, setOpen] = React.useState(false);
     const [user, setUser] = useState<{ name: string } | null>(null);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
 
     useEffect(() => {
         // Obtener sesión del localStorage
@@ -43,9 +45,25 @@ export const Navbar = () => {
         fetchUserData();
     }, []);
 
+    // Detectar el scroll
+    useEffect(() => {
+        const handleScroll = () => {
+        if (window.scrollY > lastScrollY) {
+            setIsVisible(false); // Oculta el navbar si baja
+        } else {
+            setIsVisible(true); // Muestra el navbar si sube
+        }
+        setLastScrollY(window.scrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
+
   return (
     <> 
-        <nav>
+        <nav className={`${styles.navbar} ${isVisible ? styles.show : styles.hide}`}>
             <div className={styles.container}>
                 {/* Logo */}
                 <Link href='/' className={styles.logo}>
@@ -83,7 +101,9 @@ export const Navbar = () => {
 
                 {/* mobile menu button */}
                 <div className={styles.mobile_menu}>
-                    <MdMenu onClick={() => setOpen(!open)} />
+                    {open ? 
+                        <MdClose onClick={() => setOpen(!open)} /> : <MdMenu onClick={() => setOpen(!open)} />
+                    }
                 </div>
             </div>
         </nav>
