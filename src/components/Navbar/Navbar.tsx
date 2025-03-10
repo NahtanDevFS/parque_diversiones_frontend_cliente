@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { NavbarMenu } from '@/mockData/data';
 import styles from '@/components/Navbar/Navbar.module.css';
-import { MdMenu, MdAccountCircle, MdExitToApp, MdClose } from 'react-icons/md';
+import { MdMenu, MdAccountCircle, MdClose } from 'react-icons/md';
 import ResponsiveMenu from './ResponsiveMenu';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';

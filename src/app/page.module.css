@@ -141,6 +141,7 @@
 @media (max-width: 900px) {
   .card_container {
     width: 70%;
+    margin-top: 20%;
   }
   .section1_container {
     justify-content: center;
