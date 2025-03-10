@@ -33,9 +33,8 @@ export default function Registro() {
     // Enviar datos al servidor
     const {success, message} = await signup(formData); // Ahora devuelve true o false
     if (success) {
-      alert('Registro exitoso');
-      // Redirigir a otra página si es necesario
-      window.location.href = '/';
+      alert('Registro exitoso, ahora inicia sesión');
+      window.location.href = '/login';
     } else {
         alert(message ?? 'error desconocido'); // Establecer el mensaje de error en el estado
     }

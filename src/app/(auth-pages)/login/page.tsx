@@ -27,6 +27,7 @@ export default function LoginPage() {
       // Guardar sesión en localStorage
       localStorage.setItem("supabaseSession", JSON.stringify(session));
       alert("Inicio de sesión exitoso");
+      window.location.reload();
       router.push("/");
     } else {
       alert(message ?? "Error desconocido");
