@@ -1,24 +1,36 @@
 "use client";
 
-import React from 'react'
-import Head from 'next/head';
-import styles from './page.module.css';
-import { login } from '../actions';
+import React, { useEffect } from "react";
+import Head from "next/head";
+import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
+import { login } from "../actions";
 
-export default function loginPage() {
+export default function LoginPage() {
+  //const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const session = localStorage.getItem("supabaseSession");
+    if (session) {
+      router.push("/");
+    }
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
 
-    const {success, message} = await login(formData); // Ahora devuelve true o false
-      if (success) {
-        alert('Inicio de sesión exitoso');
-        // Redirigir a otra página si es necesario
-        window.location.href = '/';
-      } else {
-          alert(message ?? 'error desconocido'); // Establecer el mensaje de error en el estado
-      }
-    
+    const { success, session, message } = await login(formData);
+
+    if (success) {
+      // Guardar sesión en localStorage
+      localStorage.setItem("supabaseSession", JSON.stringify(session));
+      alert("Inicio de sesión exitoso");
+      router.push("/");
+    } else {
+      alert(message ?? "Error desconocido");
+    }
   };
 
   return (
@@ -40,12 +52,12 @@ export default function loginPage() {
 
         {/* Botón de Registro */}
         <div className={styles.buttonContainer}>
-            <button type="submit">Iniciar sesión</button>
+          <button type="submit">Iniciar sesión</button>
         </div>
 
-        {/* Enlace para iniciar sesión */}
+        {/* Enlace para recuperar contraseña */}
         <p>
-          ¿Olvidaste tu contraseña?{' '}
+          ¿Olvidaste tu contraseña?{" "}
           <a href="/forgot-password" className={styles.loginLink}>
             Haz clic aquí
           </a>

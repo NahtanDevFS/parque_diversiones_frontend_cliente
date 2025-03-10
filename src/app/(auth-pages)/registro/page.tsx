@@ -1,13 +1,23 @@
 "use client";
 
-import React, {  } from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from "next/navigation";
 import styles from './page.module.css';
 import { signup } from '../actions';
 
 export default function Registro() {
 
     //const [errorMessage, setErrorMessage] = useState<string | null>(null); // Estado para manejar mensajes de error
+
+  const router = useRouter();
+  
+    useEffect(() => {
+      const session = localStorage.getItem("supabaseSession");
+      if (session) {
+        router.push("/");
+      }
+    }, [router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

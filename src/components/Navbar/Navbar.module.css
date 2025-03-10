@@ -52,8 +52,27 @@
 .button:hover {
     background: #F48C06;
     color: #ffee00;
+    transform: scale(1.125);
+}
+
+.user_info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     font-weight: 700;
-    font-size: 11px;
+}
+
+.user_info:hover {
+    transition: all 0.1s ease-in-out;
+    transform: scale(1.11);
+    color: rgb(182, 82, 0);
+    cursor: pointer;
+}
+
+.user_icon {
+    cursor: pointer;
+    color: rgba(255, 115, 0, 1);
 }
 
 .list {
@@ -112,11 +131,22 @@
 
 
 @media (max-width: 768px) {
+    .user_info:hover {
+        transition: all 0.1s ease-in-out;
+        transform: scale(1);
+        color: rgb(255, 255, 255);
+        cursor: pointer;
+    }
+
     .logo {
         font-size: 20px;
         align-items: center;
         display: flex;
         flex-direction: row;
+    }
+
+    .user_container {
+        display: none;
     }
 
     .list {
