@@ -2,18 +2,22 @@
 
 import { useState } from "react";
 import { updatePassword } from "../actions";
-import { useSearchParams } from "next/navigation";
+//import { useSearchParams } from "next/navigation";
 import "./reset_password.css";
 
 export default function ResetPassword() {
-  const searchParams = useSearchParams();
+  //const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { success, message } = await updatePassword(password);
-    setMessage(message);
+    if (success) {
+      setMessage(message);
+    } else {
+      setMessage(message);
+    }
   };
 
   return (

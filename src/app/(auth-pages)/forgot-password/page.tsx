@@ -12,7 +12,11 @@ export default function forgot_pass_page() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { success, message } = await forgotPassword(email);
-    setMessage(message);
+    if (success) {
+      setMessage(message);
+    } else {
+      setMessage(message);
+    }
   };
 
   return (
