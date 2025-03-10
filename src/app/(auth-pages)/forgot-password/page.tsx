@@ -4,7 +4,7 @@ import { useState } from "react";
 import { forgotPassword } from "../actions";
 import './forgot_pass.css'
 
-export default function forgot_pass_page() {
+export default function ForgotPassword() {
 
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
