@@ -16,7 +16,7 @@ const Perfil_page = () => {
   });
 
   const [newPassword, setNewPassword] = useState(""); // Para cambiar la contraseña
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
 
   // Cargar datos del usuario desde la BD
   useEffect(() => {
@@ -77,7 +77,7 @@ const Perfil_page = () => {
 
       </div>
       <div className='user_button_container'>
-        <button onClick={handleSave} disabled={loading}>{loading ? "Guardando..." : "Guardar Cambios"}</button>
+        {/*<button onClick={handleSave} disabled={loading}>{loading ? "Guardando..." : "Guardar Cambios"}</button>*/}
         <button onClick={handleLogout} className='user_button_logout'>Cerrar Sesión</button>
       </div>
     </div>
