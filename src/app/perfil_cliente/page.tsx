@@ -35,7 +35,7 @@ const Perfil_page = () => {
   };
 
   // Guardar cambios en la BD
-  const handleSave = async () => {
+  //const handleSave = async () => {
   //   setLoading(true);
   //   const success = await updateUserData({ ...user, password: newPassword });
   //   if (success) {
@@ -44,7 +44,7 @@ const Perfil_page = () => {
   //     alert("Error al actualizar los datos");
   //   }
   //   setLoading(false);
-  };
+  //};
 
   // Cerrar sesión (elimina token y recarga la página)
   const handleLogout = () => {
