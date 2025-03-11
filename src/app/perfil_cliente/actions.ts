@@ -32,19 +32,19 @@ export async function getUserData() {
   return data;
 }
 
-export async function updateUserData({
-    nombre,
-    fecha_nacimiento,
-    telefono,
-    password, // Acepta la nueva contraseña
-  }: {
-    nombre?: string;
-    fecha_nacimiento?: string;
-    telefono?: string;
-    password?: string;
-  }) {
+// export async function updateUserData({
+//     nombre,
+//     fecha_nacimiento,
+//     telefono,
+//     password, // Acepta la nueva contraseña
+//   }: {
+//     nombre?: string;
+//     fecha_nacimiento?: string;
+//     telefono?: string;
+//     password?: string;
+//   }) {
 
-}
+// }
 
 
 // 🔹 Cerrar sesión del usuario
