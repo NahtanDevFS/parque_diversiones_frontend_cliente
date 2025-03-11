@@ -83,10 +83,10 @@ export const Navbar = () => {
                 {/* user */}
                 <div className={styles.user_container}>
                     {user ? (
-                        <div className={styles.user_info}>
+                        <Link href='/perfil_cliente' className={styles.user_info}>
                             <span>Bienvenido, {user.name}</span>
                             <MdAccountCircle size={32} className={styles.user_icon} />
-                        </div>
+                        </Link>
                     ) : (
                         <>
                             <Link href='/login'>
