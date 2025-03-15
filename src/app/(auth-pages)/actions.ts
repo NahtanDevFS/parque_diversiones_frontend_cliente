@@ -2,11 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
+import { createClientServer } from '@/utils/supabase/server'
 import bcrypt from 'bcryptjs';
 
 export async function login(formData: FormData) {
-  const supabase = await createClient();
+  const supabase = await createClientServer();
 
   const data = {
     email: formData.get('email') as string,
@@ -29,7 +29,7 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createClientServer()
 
   const data = {
     email: formData.get('email') as string,
@@ -91,7 +91,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function forgotPassword(email: string) {
-  const supabase = await createClient();
+  const supabase = await createClientServer();
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: "https://parque-diversiones-frontend-cliente.vercel.app/reset-password", // Cambia esto a tu dominio en producción
@@ -106,7 +106,7 @@ export async function forgotPassword(email: string) {
 
 
 export async function updatePassword(newPassword: string) {
-  const supabase = await createClient();
+  const supabase = await createClientServer();
 
   // Obtener la sesión actual del usuario
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();

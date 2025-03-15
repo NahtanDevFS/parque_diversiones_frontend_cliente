@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import bcrypt from "bcryptjs";
+import { createClientServer } from '@/utils/supabase/server'
 
 // Configurar Supabase
 const supabase = createClient(
@@ -32,19 +34,55 @@ export async function getUserData() {
   return data;
 }
 
-// export async function updateUserData({
-//     nombre,
-//     fecha_nacimiento,
-//     telefono,
-//     password, // Acepta la nueva contraseña
-//   }: {
-//     nombre?: string;
-//     fecha_nacimiento?: string;
-//     telefono?: string;
-//     password?: string;
-//   }) {
+export async function updateUserData({
+    nombre,
+    fecha_nacimiento,
+    telefono,
+    contrasena, // Acepta la nueva contraseña
+  }: {
+    nombre?: string;
+    fecha_nacimiento?: string;
+    telefono?: string;
+    contrasena?: string;
+  }) {
 
-// }
+    const sessionData = localStorage.getItem("supabaseSession");
+    if (!sessionData) return { success: false, message: "No hay sesión activa" };
+
+    const session = JSON.parse(sessionData);
+    const userId = session?.user?.id;
+
+    if (!userId) return { success: false, message: "Usuario no autenticado" };
+
+    let updatePayload: any = {
+      nombre,
+      fecha_nacimiento,
+      telefono,
+      contrasena
+    };
+
+    // Si el usuario quiere actualizar su contraseña, la encriptamos
+    if (contrasena) {
+      //const hashedPassword = await hashPassword(password);
+      const hashedPassword = await bcrypt.hash(contrasena, 10);
+      updatePayload.contrasena = hashedPassword;
+    }
+
+    
+
+    const { error } = await supabase
+      .from("cliente")
+      .update(updatePayload)
+      .eq("id_cliente", userId);
+
+    if (error) {
+      console.error("Error actualizando datos:", error.message);
+      return { success: false, message: "Error actualizando datos" };
+    }
+
+    return { success: true, message: "Datos actualizados correctamente" };
+
+}
 
 
 // 🔹 Cerrar sesión del usuario
