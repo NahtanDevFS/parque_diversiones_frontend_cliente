@@ -1,10 +1,10 @@
 "use client";
 
-import { Event } from '@/components/Event/Event'
-import React, { useEffect, useState } from 'react'
+import { Event } from '@/components/Event/Event';
+import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
-const page = () => {
+const Page = () => {
 
   const [stateEvent, setStateEvent] = useState("");
 
@@ -37,4 +37,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
