@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcryptjs";
-import { createClientServer } from '@/utils/supabase/server'
+//import { createClientServer } from '@/utils/supabase/server'
 
 // Configurar Supabase
 const supabase = createClient(
