@@ -34,6 +34,14 @@ export async function getUserData() {
   return data;
 }
 
+
+type UpdatePayload = {
+  nombre?: string;
+  fecha_nacimiento?: string; // Puedes cambiarlo a Date si es un objeto Date
+  telefono?: string;
+  contrasena?: string;
+};
+
 export async function updateUserData({
     nombre,
     fecha_nacimiento,
@@ -54,7 +62,7 @@ export async function updateUserData({
 
     if (!userId) return { success: false, message: "Usuario no autenticado" };
 
-    let updatePayload: any = {
+    const updatePayload: UpdatePayload = {
       nombre,
       fecha_nacimiento,
       telefono,
