@@ -26,7 +26,7 @@ export const Navbar = () => {
             const session = localStorage.getItem("supabaseSession");
             if (session) {
                 const parsedSession = JSON.parse(session);
-                // setUser({ name: parsedSession.user.user_metadata.nombre || "Usuario" });
+                //setUser({ name: parsedSession.user.user_metadata.nombre || "Usuario" });
                 // Consultar la base de datos para obtener el nombre del usuario
                 const { data, error } = await supabase
                     .from('cliente') // Asegúrate de que este es el nombre correcto de la tabla
