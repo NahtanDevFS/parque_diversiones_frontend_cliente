@@ -110,26 +110,5 @@
       border-radius: 4px;
       font-size: 0.7rem;
     }
-
-    .qrContainer {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .emailButton {
-      width: 60%;
-      padding: 0.8rem;
-      margin-top: 1rem;
-      background-color: rgba(255, 157, 0, 1);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    .emailButton:hover {
-      background-color: rgba(255, 115, 0, 1);
-    }
     
   }

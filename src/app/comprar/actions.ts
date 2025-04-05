@@ -8,6 +8,7 @@ export async function comprar(formData: FormData) {
   const id_cliente = formData.get("id_cliente") as string; // UUID del cliente
   const precio = formData.get("precio") as string;
   const id_metodo_pago = formData.get("metodopago") as string;
+  const usos = formData.get("cantidad") as string;
 
   if (!id_cliente) {
     return { success: false, message: "Error: Usuario no autenticado." };
@@ -24,6 +25,7 @@ export async function comprar(formData: FormData) {
         precio: parseFloat(precio),
         id_cliente,
         id_metodo_pago: parseInt(id_metodo_pago),
+        usos: parseInt(usos)
       },
     ])
     .select();
