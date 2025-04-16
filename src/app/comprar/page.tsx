@@ -1,194 +1,260 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Image from 'next/image'
-import QRCode from 'qrcode'
-import styles from '../eventos/page.module.css'
-import { v4 as uuidv4 } from 'uuid'
+import React, { useEffect, useState } from 'react';
+import styles from './page.module.css';
+import Head from 'next/head';
+import QRCode from 'react-qr-code';
+import { comprar } from './actions';
 
-const Page = () => {
-  const [nombre, setNombre] = useState('')
-  const [dpi, setDpi] = useState('')
-  const [tarjeta, setTarjeta] = useState('')
-  const [vencimiento, setVencimiento] = useState('')
-  const [cvv, setCvv] = useState('')
-  const [tipo, setTipo] = useState('entrada')
-  const [email, setEmail] = useState('')
-  const [precio, setPrecio] = useState(25)
-  const [qrDataUrl, setQrDataUrl] = useState('')
-  const [sending, setSending] = useState(false)
+export default function Comprar() {
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [cantidad, setCantidad] = useState<number>(1);
 
-  const precios = {
-    entrada: 25,
-    atracciones: 50,
-    total: 80,
-  }
+  // <<< agregado: precios por tipo de ticket
+  const precios: Record<string, number> = {
+    entrada: 50,
+    juegos: 80,
+    completo: 120,
+  };
+  // <<< agregado: estado para tipo de ticket y precio unitario dinámico
+  const [tipoTicket, setTipoTicket] = useState<string>('entrada');
+  const [precioUnitario, setPrecioUnitario] = useState<number>(precios['entrada']);
+  // <<< agregado: total recalculado
+  const total = precioUnitario;
 
-  const usosPorTipo: Record<string, number | null> = {
-    entrada: 1,
-    atracciones: 20,
-    total: null,
-  }
+  const [tarjeta, setTarjeta] = useState({
+    numero: '',
+    vencimiento: '',
+    cvv: '',
+    titular: ''
+  });
 
-  const handleTipoChange = (value: string) => {
-    setTipo(value)
-    setPrecio(precios[value as keyof typeof precios])
-  }
+  // <<< agregado: estado para mostrar aviso de correo enviado
+  const [emailSent, setEmailSent] = useState<boolean>(false);
 
-  const handleSubmit = async () => {
-    if (!nombre || !dpi || !tarjeta || !vencimiento || !cvv || !email) {
-      return alert('Por favor completa todos los campos')
+  useEffect(() => {
+    // Intentar obtener el usuario desde localStorage
+    const session = localStorage.getItem("supabaseSession");
+    if (session) {
+      const parsedSession = JSON.parse(session);
+      setUserId(parsedSession?.user?.id || null);
     }
+  }, []);
 
-    const idTicket = uuidv4()
-    const qr = await QRCode.toDataURL(idTicket)
+  const formatearNumeroTarjeta = (value: string) => {
+    const limpio = value.replace(/\D/g, '').slice(0, 16);
+    return limpio.replace(/(.{4})/g, '$1 ').trim();
+  };
 
-    const datos = {
-      id: idTicket,
-      nombre,
-      dpi,
-      tarjeta,
-      vencimiento,
-      cvv,
-      tipo,
-      usos: usosPorTipo[tipo],
-      email,
-      precio,
-      fechaCompra: new Date().toLocaleString(),
-      qrBase64: qr,
+  const detectarTipoTarjeta = (numero: string) => {
+    const prefijos = {
+      Visa: /^4/,
+      MasterCard: /^5[1-5]/,
+      Amex: /^3[47]/,
+      Discover: /^6(?:011|5)/,
+      Diners: /^3(?:0[0-5]|[68])/,
+      JCB: /^(?:2131|1800|35)/,
+    };
+
+    for (const [tipo, regex] of Object.entries(prefijos)) {
+      if (regex.test(numero)) {
+        return tipo;
+      }
     }
+    return null;
+  };
 
-    setQrDataUrl(qr)
-    setSending(true)
-
-    try {
-      const res = await fetch('/api/send-qr-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, qr, datos }),
-      })
-
-      const data = await res.json()
-      alert(data.message || 'Correo enviado')
-    } catch (err) {
-      console.error(err)
-      alert('Error al enviar el correo')
-    } finally {
-      setSending(false)
+  const handleVencimientoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '').slice(0, 4); // Solo números, máximo 4 caracteres
+    if (value.length >= 3) {
+      value = `${value.slice(0, 2)}/${value.slice(2)}`;
     }
-  }
+    setTarjeta({ ...tarjeta, vencimiento: value });
+  };
+
+  const handleNumeroTarjetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const numeroFormateado = formatearNumeroTarjeta(e.target.value);
+    setTarjeta({ ...tarjeta, numero: numeroFormateado });
+  };
+
+  // <<< agregado: manejador de cambio de tipo de ticket
+  const handleTipoTicketChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const tipo = e.target.value;
+    setTipoTicket(tipo);
+    setPrecioUnitario(precios[tipo] ?? precios['entrada']);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    // <<< agregado: reiniciar aviso
+    setEmailSent(false);
+
+    const formData = new FormData(e.target as HTMLFormElement);
+    formData.append("id_cliente", userId ?? '');
+    formData.append("cantidad", cantidad.toString());
+    formData.append("precio", total.toString());
+    formData.append("metodopago", "1");
+    formData.append("numero_tarjeta", tarjeta.numero.replace(/\s/g, ''));
+    formData.append("vencimiento", tarjeta.vencimiento);
+    formData.append("cvv", tarjeta.cvv);
+    formData.append("titular", tarjeta.titular);
+    // <<< agregado: enviamos también el tipo de ticket
+    formData.append("tipo_ticket", tipoTicket);
+
+    const { success, qr, message } = await comprar(formData);
+
+    setLoading(false);
+
+    if (success) {
+      setQrCode(qr ?? null);
+      // <<< agregado: mostrar aviso de correo enviado
+      setEmailSent(true);
+    } else {
+      alert(message ?? 'Error desconocido');
+    }
+  };
 
   return (
-    <div
-      className={styles.eventos_container}
-      style={{ paddingTop: '100px' }}
-    >
-      <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-yellow-700 text-center mb-6">
-          Comprar ticket - Envío por correo
-        </h1>
+    <div className={styles.container}>
+      <Head>
+        <title>Compra de Ticket</title>
+      </Head>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block mb-1 text-sm font-medium">Nombre completo</label>
-            <input
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Ej: Ana Pérez"
-            />
-          </div>
+      <form onSubmit={handleSubmit} className={styles.form}>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium">DPI</label>
-            <input
-              type="text"
-              value={dpi}
-              onChange={(e) => setDpi(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Ej: 1234567890101"
-            />
-          </div>
+        <h1>Datos del comprador</h1>
+        <label htmlFor="nombre_completo">Nombre Completo:</label>
+        <input
+          type="text"
+          id="nombre_completo"
+          name="nombre_completo"
+          placeholder="Juan Pérez"
+          required
+        />
 
-          <div>
-            <label className="block mb-1 text-sm font-medium">Número de tarjeta</label>
-            <input
-              type="text"
-              value={tarjeta}
-              onChange={(e) => setTarjeta(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="XXXX-XXXX-XXXX-1234"
-            />
-          </div>
+        <label htmlFor="dpi">DPI:</label>
+        <input
+          type="text"
+          id="dpi"
+          name="dpi"
+          placeholder="1234567890101"
+          required
+          maxLength={13}
+        />
 
-          <div>
-            <label className="block mb-1 text-sm font-medium">Fecha de vencimiento</label>
-            <input
-              type="month"
-              value={vencimiento}
-              onChange={(e) => setVencimiento(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
+        <label htmlFor="email">Correo Electrónico:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="correo@example.com"
+          required
+        />
 
-          <div>
-            <label className="block mb-1 text-sm font-medium">CVV</label>
-            <input
-              type="password"
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="123"
-            />
-          </div>
+        <h1>Compra de Ticket</h1>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium">Tipo de ticket</label>
-            <select
-              value={tipo}
-              onChange={(e) => handleTipoChange(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="entrada">Solo entrada</option>
-              <option value="atracciones">Acceso a atracciones</option>
-              <option value="total">Acceso total</option>
-            </select>
-          </div>
+        <label htmlFor="tipo_ticket">Tipo de Ticket:</label>
+        <select
+          id="tipo_ticket"
+          name="tipo_ticket"
+          value={tipoTicket}
+          onChange={handleTipoTicketChange}
+          required
+        >
+          <option value="entrada">Entrada</option>
+          <option value="juegos">Juegos</option>
+          <option value="completo">Completo</option>
+        </select>
 
-          <div className="md:col-span-2">
-            <label className="block mb-1 text-sm font-medium">Correo electrónico</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="correo@ejemplo.com"
-            />
-          </div>
+        <label htmlFor="precio">Precio del Ticket (Q):</label>
+        <input
+          type="number"
+          id="precio"
+          value={precioUnitario}
+          disabled
+        />
 
-          <div className="md:col-span-2 text-right text-lg font-semibold text-gray-700">
-            Precio: Q{precio}
-          </div>
+        <h1>Datos de Tarjeta</h1>
+
+        <label htmlFor="numero_tarjeta">Número de Tarjeta:</label>
+        <input
+          type="text"
+          id="numero_tarjeta"
+          name="numero_tarjeta"
+          value={tarjeta.numero}
+          onChange={handleNumeroTarjetaChange}
+          placeholder="1234 5678 9101 1121"
+          required
+          maxLength={19}
+        />
+
+        <label htmlFor="vencimiento">Fecha de Vencimiento:</label>
+        <input
+          type="text"
+          id="vencimiento"
+          name="vencimiento"
+          value={tarjeta.vencimiento}
+          onChange={handleVencimientoChange}
+          placeholder="MM/YY"
+          required
+          maxLength={5}
+        />
+
+        <label htmlFor="cvv">CVV:</label>
+        <input
+          type="password"
+          id="cvv"
+          name="cvv"
+          value={tarjeta.cvv}
+          onChange={(e) => setTarjeta({ ...tarjeta, cvv: e.target.value })}
+          placeholder="123"
+          required
+          maxLength={3}
+        />
+
+        <label htmlFor="titular">Nombre del Titular:</label>
+        <input
+          type="text"
+          id="titular"
+          name="titular"
+          value={tarjeta.titular}
+          onChange={(e) => setTarjeta({ ...tarjeta, titular: e.target.value })}
+          placeholder="Nombre Apellido"
+          required
+        />
+
+        <div className={styles.buttonContainer}>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Comprando...' : 'Comprar'}
+          </button>
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={sending}
-          className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-md transition"
+        {qrCode && (
+          <div
+            className={styles.qrContainer}
+            style={{
+            marginTop: 50,
+            display: 'flex',           // <<< agregado
+            flexDirection: 'column',   // <<< opcional para que el título quede encima
+            alignItems: 'center'       // <<< centra horizontalmente
+         }}
         >
-          {sending ? 'Enviando...' : 'Comprar ticket'}
-        </button>
+        <h2>Tu Código QR</h2>
+         <QRCode value={qrCode} size={200} />
+        </div>
+        )}
 
-        {qrDataUrl && (
-          <div className="mt-8 text-center">
-            <h2 className="text-lg font-semibold mb-2 text-gray-800">QR generado:</h2>
-            <Image src={qrDataUrl} alt="QR" width={200} height={200} className="mx-auto" />
+        {/* <<< agregado: mensaje de éxito de correo */}
+        {emailSent && (
+          <div className={styles.successMessage}>
+            ✅ Se ha enviado un correo electrónico con tu código QR.
           </div>
         )}
-      </div>
-    </div>
-  )
-}
 
-export default Page
+      </form>
+    </div>
+);
+}
