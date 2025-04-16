@@ -5,6 +5,7 @@ import Head from "next/head";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { login } from "../actions";
+import Swal from "sweetalert2"; // Importamos SweetAlert2
 
 export default function LoginPage() {
   //const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,11 +27,21 @@ export default function LoginPage() {
     if (success) {
       // Guardar sesión en localStorage
       localStorage.setItem("supabaseSession", JSON.stringify(session));
-      alert("Inicio de sesión exitoso");
+      await Swal.fire({
+        title: "Inicio de sesión exitoso",
+        icon: "success",
+        confirmButtonText: "Continuar",
+      });
       window.location.reload();
       router.push("/");
     } else {
-      alert(message ?? "Error desconocido");
+      // Mostramos la notificación de error con el mensaje recibido o un mensaje por defecto
+      await Swal.fire({
+        title: "Error",
+        text: message ?? "Error desconocido",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
     }
   };
 

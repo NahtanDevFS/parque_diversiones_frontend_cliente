@@ -16,7 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const Navbar = () => {
 
     const [open, setOpen] = React.useState(false);
-    const [user, setUser] = useState<{ name: string } | null>(null);
+    const [user, setUser] = useState<{ name: string, puntos: number } | null>(null);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -30,7 +30,7 @@ export const Navbar = () => {
                 // Consultar la base de datos para obtener el nombre del usuario
                 const { data, error } = await supabase
                     .from('cliente') // Asegúrate de que este es el nombre correcto de la tabla
-                    .select('nombre')
+                    .select('nombre, puntos')
                     .eq('id_cliente', parsedSession.user.id)
                     .single();
 
@@ -39,7 +39,7 @@ export const Navbar = () => {
                     return;
                 }
 
-                setUser({ name: data.nombre || "Usuario" });
+                setUser({ name: data.nombre || "Usuario" , puntos: data.puntos || 0});
             }
         };
         fetchUserData();
@@ -86,6 +86,7 @@ export const Navbar = () => {
                         <Link href='/perfil_cliente' className={styles.user_info}>
                             <span>Bienvenido, {user.name}</span>
                             <MdAccountCircle size={32} className={styles.user_icon} />
+                            <span>Tus puntos son: {user.puntos}</span>
                         </Link>
                     ) : (
                         <>
