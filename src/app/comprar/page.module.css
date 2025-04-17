@@ -85,6 +85,38 @@
     text-decoration: underline;
   }
 
+/* burbuja de notificación de puntos */
+.pointsNotif {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background-color: rgba(255, 186, 8, 0.9);
+  color: #333;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+.pointsNotif span {
+  flex: 1;
+  font-size: 0.9rem;
+}
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+.closeButton:hover {
+  color: #000;
+}
+
+
   @media screen and (max-width: 900px) {
     .form {
       margin-top: 25%;
