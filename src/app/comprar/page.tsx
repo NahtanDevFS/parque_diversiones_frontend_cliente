@@ -135,7 +135,7 @@ export default function Comprar() {
       {/* <<< burbuja de puntos */}
       {showPointsNotif && (
         <div className={styles.pointsNotif} onClick={handleNotifClick}>
-          <span>¡Ya puedes canjear un ticket por puntos!</span>
+          <span>¡Ya puedes canjear tus puntos por un ticket!</span>
           <button className={styles.closeButton} onClick={handleCloseNotif}>×</button>
         </div>
       )}
