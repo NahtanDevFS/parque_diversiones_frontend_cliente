@@ -96,7 +96,7 @@ export default function MisTicketsPage() {
                     <strong>Comprado:</strong>{" "}
                     {new Date(ticket.fecha_compra).toLocaleDateString("es-GT")}
                   </p>
-                  <p><strong>Usos:</strong> {ticket.usos}</p>
+                  <p><strong>Usos restantes:</strong> {ticket.usos}</p>
                 </div>
               </li>
             ))}
