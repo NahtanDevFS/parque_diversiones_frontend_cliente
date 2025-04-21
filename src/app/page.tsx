@@ -3,11 +3,14 @@
 import { Attraction } from "@/components/Attraction/Attraction";
 import styles from "./page.module.css";
 import { Button } from "@/components/Button/Button";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
 
+  const router = useRouter();
+
   const handleClick = () => {
-    alert('Botón presionado');
+    router.push("/comprar");
   };
 
   return (

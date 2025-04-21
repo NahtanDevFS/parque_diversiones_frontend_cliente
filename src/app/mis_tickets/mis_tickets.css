@@ -1,0 +1,143 @@
+/* app/mis_tickets/mis_tickets.css */
+.mis_tickets_page {
+    background-color: rgba(255, 186, 8, 0.2);
+    min-height: 100vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+.mis_tickets_container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 4%;
+}
+  
+  .ticket_list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+  }
+  
+  .ticket_card {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  .ticket_info {
+    width: 100%;
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+  
+  .ticket_info p {
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+  }
+  
+  .ticket_qr {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+.qr_image {
+    width: 200px;
+    height: 200px;
+}
+  
+.estado_disponible {
+  color: rgb(0, 217, 0);
+  font-weight: 700;
+}
+  
+.estado_agotado_usado {
+  color: rgb(255, 68, 68);
+  font-weight: 700;
+}
+
+/* en app/mis_tickets/mis_tickets.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    text-align: center;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  
+  .modal-qr-image {
+    width: 400px;
+    height: 400px;
+    margin-bottom: 1rem;
+  }
+  
+  .modal-ticket-info {
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  
+  .modal-ticket-info p {
+    margin: 0.3rem 0;
+  }
+  
+  /* Ya tenías estas clases: */
+  .estado_disponible {
+    color: rgb(0, 217, 0);
+    font-weight: 700;
+  }
+  .estado_agotado_usado {
+    color: rgb(255, 68, 68);
+    font-weight: 700;
+  }
+  
+
+@media only screen and (max-width: 480px) {
+    .mis_tickets_container {
+        margin-top: 15%;
+      }
+    .modal-qr-image {
+        width: 300px;
+        height: 300px;
+    }
+}

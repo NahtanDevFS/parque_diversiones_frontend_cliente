@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useRouter } from "next/navigation";
 import styles from './page.module.css';
 import { signup } from '../actions';
+import Swal from "sweetalert2";
 
 export default function Registro() {
 
@@ -26,17 +27,32 @@ export default function Registro() {
 
     // Validación básica
     if (data.password !== data.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      await Swal.fire({
+        title: "Error",
+        text: "Las contraseñas no coinciden",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
       return;
     }
 
     // Enviar datos al servidor
     const {success, message} = await signup(formData); // Ahora devuelve true o false
     if (success) {
-      alert('Registro exitoso, ahora inicia sesión');
+      await Swal.fire({
+        title: "Registro exitoso",
+        text: "Ahora inicia sesión",
+        icon: "success",
+        confirmButtonText: "Continuar",
+      });
       window.location.href = '/login';
     } else {
-        alert(message ?? 'error desconocido'); // Establecer el mensaje de error en el estado
+        await Swal.fire({
+          title: "Error",
+          text: message ?? "Error desconocido",
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
     }
   };
 

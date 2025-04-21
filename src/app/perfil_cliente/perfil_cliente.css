@@ -2,10 +2,11 @@
     background-color: rgba(255, 186, 8, 0.2);
     display: flex;
     flex-direction: column;
-    padding-top: 5%;
+    padding-top: 7%;
     height: auto;
     padding-left: 20%;
     padding-right: 20%;
+    padding-bottom: 5%;
 }
 
 .user_info_container {
@@ -13,7 +14,87 @@
     flex-direction: column;
 }
 
+.user_info_page h1 {
+    margin-bottom: 2%;
+}
+
 .user_button_container {
     display: flex;
     flex-direction: column;
+}
+
+.user_info_container {
+    display: flex;
+    flex-direction: column;
+    padding: 3%;
+    border-radius: 10px;
+    background-color: rgba(255, 186, 8, 0.25);
+}
+
+.user_info_label, .user_info_input {
+    font-size: 18px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.user_info_label {
+    font-weight: bold;
+}
+
+
+.user_info_input {
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 157, 0, 1);
+    margin-bottom: 2%;
+}
+
+.user_button_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 2%;
+    padding: 0% 2% 0% 2%;
+}
+
+.user_button_save_changes, .user_button_logout {
+    font-size: 18px;
+    border-radius: 20px;
+    border: none;
+    padding: 1%;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.user_button_save_changes {
+    background-color: rgba(255, 157, 0, 1);
+}
+
+.user_button_logout {
+    background-color: rgb(255, 50, 50);
+}
+
+.user_button_save_changes:hover {
+    background-color: rgba(255, 157, 0, 0.7);
+    transition: all 0.3s ease-in-out;
+}
+
+.user_button_logout:hover {
+    background-color: rgba(255, 50, 50, 0.8);
+    transition: all 0.3s ease-in-out;
+}
+
+@media screen and (max-width: 1100px) {
+    .user_info_page {
+        padding-top: 25%;
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+
+    .user_button_save_changes, .user_button_logout {
+        font-size: 14px;
+        border-radius: 12px;
+        padding: 3%;
+    }
 }

@@ -17,7 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open, onClose }) => {
 
-    const [user, setUser] = useState<{ name: string } | null>(null);
+    const [user, setUser] = useState<{ name: string, puntos: number } | null>(null);
 
     useEffect(() => {
         // Obtener sesión del localStorage
@@ -29,7 +29,7 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open, onClose }) => {
                 // Consultar la base de datos para obtener el nombre del usuario
                 const { data, error } = await supabase
                     .from('cliente') // Asegúrate de que este es el nombre correcto de la tabla
-                    .select('nombre')
+                    .select('nombre, puntos')
                     .eq('id_cliente', parsedSession.user.id)
                     .single();
 
@@ -38,7 +38,7 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open, onClose }) => {
                     return;
                 }
 
-                setUser({ name: data.nombre || "Usuario" });
+                setUser({ name: data.nombre || "Usuario", puntos: data.puntos || 0 });
             }
         };
         fetchUserData();
@@ -72,21 +72,28 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open, onClose }) => {
                         </li>
                         {user ? (
                             // Si hay sesión, mostrar icono y nombre
-                            <li>
-                                <Link href="/perfil_cliente" onClick={handleClose} className={styles.user_info}>
-                                    <FaUserCircle size={32} />
-                                    <span>{user.name}</span>
-                                </Link>
-                            </li>
+                            <>
+                                <li>
+                                    <Link href="/perfil_cliente" onClick={handleClose} className={styles.user_info}>
+                                        <FaUserCircle size={32} />
+                                        <span>{user.name}</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/perfil_cliente" onClick={handleClose} className={styles.user_info}>
+                                        <span>Tus puntos son: {user.puntos}</span>
+                                    </Link>
+                                </li>
+                            </>
                         ) : (
                             // Si no hay sesión, mostrar botones de Login y Registro
                             <>
-                            <li>
-                                <Link href="/login" onClick={handleClose}>Iniciar sesión</Link>
-                            </li>
-                            <li>
-                                <Link href="/registro" onClick={handleClose}>Registrarme</Link>
-                            </li>
+                                <li>
+                                    <Link href="/login" onClick={handleClose}>Iniciar sesión</Link>
+                                </li>
+                                <li>
+                                    <Link href="/registro" onClick={handleClose}>Registrarme</Link>
+                                </li>
                             </>
                         )}
                     </ul>

@@ -3,6 +3,7 @@ import './Event.css';
 
 interface EventProps {
   src_img: string;
+  state?: string;
   title?: string;
   description?: string;
   fecha?: string;
@@ -10,10 +11,13 @@ interface EventProps {
   hora_final?: string;
 }
 
-export const Event = ({src_img, title, description, fecha, hora_inicio, hora_final}: EventProps) => {
+export const Event = ({src_img, state, title, description, fecha, hora_inicio, hora_final}: EventProps) => {
   return (
     <div className='event_container'>
         <div className='event_card_container'>
+            <h2 className='event_state'>
+                {state}
+            </h2>
             <h1 className='event_title'>
                 {title}
             </h1>

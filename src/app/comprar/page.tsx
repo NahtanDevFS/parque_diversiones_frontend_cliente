@@ -1,16 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';            // <<< agregado
 import styles from './page.module.css';
 import Head from 'next/head';
 import QRCode from 'react-qr-code';
 import { comprar } from './actions';
+import Swal from 'sweetalert2';
+import { supabase } from '@/utils/supabase/client';      // <<< agregado
 
 export default function Comprar() {
+  const router = useRouter();                            // <<< agregado
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [cantidad, setCantidad] = useState<number>(1);
+
+  // <<< estado y lógica para notificación de puntos
+  const [showPointsNotif, setShowPointsNotif] = useState(false);
 
   // <<< agregado: precios por tipo de ticket
   const precios: Record<string, number> = {
@@ -18,10 +25,8 @@ export default function Comprar() {
     juegos: 80,
     completo: 120,
   };
-  // <<< agregado: estado para tipo de ticket y precio unitario dinámico
   const [tipoTicket, setTipoTicket] = useState<string>('entrada');
   const [precioUnitario, setPrecioUnitario] = useState<number>(precios['entrada']);
-  // <<< agregado: total recalculado
   const total = precioUnitario;
 
   const [tarjeta, setTarjeta] = useState({
@@ -30,16 +35,33 @@ export default function Comprar() {
     cvv: '',
     titular: ''
   });
-
-  // <<< agregado: estado para mostrar aviso de correo enviado
   const [emailSent, setEmailSent] = useState<boolean>(false);
 
   useEffect(() => {
-    // Intentar obtener el usuario desde localStorage
     const session = localStorage.getItem("supabaseSession");
     if (session) {
-      const parsedSession = JSON.parse(session);
-      setUserId(parsedSession?.user?.id || null);
+      const parsed = JSON.parse(session);
+      const id = parsed.user.id;
+      setUserId(id);
+
+      // <<< agregado: comprobar puntos
+      (async () => {
+        const { data, error } = await supabase
+          .from('cliente')
+          .select('puntos')
+          .eq('id_cliente', id)
+          .single();
+        if (!error && data?.puntos >= 50) {
+          setShowPointsNotif(true);
+        }
+      })();
+    } else {
+      Swal.fire({
+        title: "Aviso",
+        text: "Necesitas crear una cuenta para comprar tickets",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
     }
   }, []);
 
@@ -48,52 +70,46 @@ export default function Comprar() {
     return limpio.replace(/(.{4})/g, '$1 ').trim();
   };
 
-  const detectarTipoTarjeta = (numero: string) => {
-    const prefijos = {
-      Visa: /^4/,
-      MasterCard: /^5[1-5]/,
-      Amex: /^3[47]/,
-      Discover: /^6(?:011|5)/,
-      Diners: /^3(?:0[0-5]|[68])/,
-      JCB: /^(?:2131|1800|35)/,
-    };
-
-    for (const [tipo, regex] of Object.entries(prefijos)) {
-      if (regex.test(numero)) {
-        return tipo;
-      }
-    }
-    return null;
-  };
-
   const handleVencimientoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '').slice(0, 4); // Solo números, máximo 4 caracteres
-    if (value.length >= 3) {
-      value = `${value.slice(0, 2)}/${value.slice(2)}`;
-    }
+    let value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (value.length >= 3) value = `${value.slice(0, 2)}/${value.slice(2)}`;
     setTarjeta({ ...tarjeta, vencimiento: value });
   };
 
   const handleNumeroTarjetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const numeroFormateado = formatearNumeroTarjeta(e.target.value);
-    setTarjeta({ ...tarjeta, numero: numeroFormateado });
+    setTarjeta({ ...tarjeta, numero: formatearNumeroTarjeta(e.target.value) });
   };
 
-  // <<< agregado: manejador de cambio de tipo de ticket
   const handleTipoTicketChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tipo = e.target.value;
     setTipoTicket(tipo);
     setPrecioUnitario(precios[tipo] ?? precios['entrada']);
   };
 
+  const handleNotifClick = () => {                       // <<< agregado
+    router.push('/perfil_cliente');
+  };
+  const handleCloseNotif = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setShowPointsNotif(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!userId) {
+      Swal.fire({
+        title: "Error",
+        text: "Necesitas crear una cuenta para comprar tickets",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
     setLoading(true);
-    // <<< agregado: reiniciar aviso
     setEmailSent(false);
 
     const formData = new FormData(e.target as HTMLFormElement);
-    formData.append("id_cliente", userId ?? '');
+    formData.append("id_cliente", userId);
     formData.append("cantidad", cantidad.toString());
     formData.append("precio", total.toString());
     formData.append("metodopago", "1");
@@ -101,16 +117,13 @@ export default function Comprar() {
     formData.append("vencimiento", tarjeta.vencimiento);
     formData.append("cvv", tarjeta.cvv);
     formData.append("titular", tarjeta.titular);
-    // <<< agregado: enviamos también el tipo de ticket
     formData.append("tipo_ticket", tipoTicket);
 
     const { success, qr, message } = await comprar(formData);
 
     setLoading(false);
-
     if (success) {
       setQrCode(qr ?? null);
-      // <<< agregado: mostrar aviso de correo enviado
       setEmailSent(true);
     } else {
       alert(message ?? 'Error desconocido');
@@ -119,6 +132,14 @@ export default function Comprar() {
 
   return (
     <div className={styles.container}>
+      {/* <<< burbuja de puntos */}
+      {showPointsNotif && (
+        <div className={styles.pointsNotif} onClick={handleNotifClick}>
+          <span>¡Ya puedes canjear tus puntos por un ticket!</span>
+          <button className={styles.closeButton} onClick={handleCloseNotif}>×</button>
+        </div>
+      )}
+
       <Head>
         <title>Compra de Ticket</title>
       </Head>
