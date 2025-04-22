@@ -58,7 +58,7 @@
     padding: 0% 2% 0% 2%;
 }
 
-.user_button_save_changes, .user_button_logout {
+.user_button_save_changes, .user_button_logout, .user_button_redeem  {
     font-size: 18px;
     border-radius: 20px;
     border: none;
@@ -75,6 +75,9 @@
     background-color: rgb(255, 50, 50);
 }
 
+.user_button_redeem {
+    background-color: rgb(82, 219, 73);
+}
 .user_button_save_changes:hover {
     background-color: rgba(255, 157, 0, 0.7);
     transition: all 0.3s ease-in-out;
@@ -92,7 +95,7 @@
         padding-right: 10%;
     }
 
-    .user_button_save_changes, .user_button_logout {
+    .user_button_save_changes, .user_button_logout, .user_button_redeem   {
         font-size: 14px;
         border-radius: 12px;
         padding: 3%;

@@ -1,25 +1,25 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';            // <<< agregado
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import Head from 'next/head';
 import QRCode from 'react-qr-code';
 import { comprar } from './actions';
 import Swal from 'sweetalert2';
-import { supabase } from '@/utils/supabase/client';      // <<< agregado
+import { supabase } from '@/utils/supabase/client';
 
 export default function Comprar() {
-  const router = useRouter();                            // <<< agregado
+  const router = useRouter();
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [cantidad, setCantidad] = useState<number>(1);
 
-  // <<< estado y lógica para notificación de puntos
+  // notificación de puntos
   const [showPointsNotif, setShowPointsNotif] = useState(false);
 
-  // <<< agregado: precios por tipo de ticket
+  // precios por tipo de ticket
   const precios: Record<string, number> = {
     entrada: 50,
     juegos: 80,
@@ -27,7 +27,8 @@ export default function Comprar() {
   };
   const [tipoTicket, setTipoTicket] = useState<string>('entrada');
   const [precioUnitario, setPrecioUnitario] = useState<number>(precios['entrada']);
-  const total = precioUnitario;
+  // total recalculado = cantidad * precio unitario
+  const total = cantidad * precioUnitario;
 
   const [tarjeta, setTarjeta] = useState({
     numero: '',
@@ -44,7 +45,7 @@ export default function Comprar() {
       const id = parsed.user.id;
       setUserId(id);
 
-      // <<< agregado: comprobar puntos
+      // comprobar si tiene suficientes puntos
       (async () => {
         const { data, error } = await supabase
           .from('cliente')
@@ -86,7 +87,12 @@ export default function Comprar() {
     setPrecioUnitario(precios[tipo] ?? precios['entrada']);
   };
 
-  const handleNotifClick = () => {                       // <<< agregado
+  const handleCantidadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseInt(e.target.value, 10) || 1;
+    setCantidad(val < 1 ? 1 : val);
+  };
+
+  const handleNotifClick = () => {
     router.push('/perfil_cliente');
   };
   const handleCloseNotif = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -96,6 +102,7 @@ export default function Comprar() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!userId) {
       Swal.fire({
         title: "Error",
@@ -105,34 +112,70 @@ export default function Comprar() {
       });
       return;
     }
+
+    const form = e.currentTarget;
+    const email = form.email.value;
+
+    // Confirmación con SweetAlert
+    const { isConfirmed } = await Swal.fire({
+      title: '¿Confirmar compra?',
+      html: `
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Tipo:</strong> ${tipoTicket}</p>
+        <p><strong>Cantidad:</strong> ${cantidad}</p>
+        <p><strong>Total:</strong> Q${total}</p>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, comprar',
+      cancelButtonText: 'Cancelar',
+    });
+    if (!isConfirmed) return;
+
     setLoading(true);
     setEmailSent(false);
 
-    const formData = new FormData(e.target as HTMLFormElement);
+    const formData = new FormData(form);
     formData.append("id_cliente", userId);
     formData.append("cantidad", cantidad.toString());
-    formData.append("precio", total.toString());
+    formData.append("precio", precioUnitario.toString());
     formData.append("metodopago", "1");
     formData.append("numero_tarjeta", tarjeta.numero.replace(/\s/g, ''));
     formData.append("vencimiento", tarjeta.vencimiento);
     formData.append("cvv", tarjeta.cvv);
     formData.append("titular", tarjeta.titular);
     formData.append("tipo_ticket", tipoTicket);
+    formData.append("total", total.toString());
 
-    const { success, qr, message } = await comprar(formData);
-
+    const { success, qrs: qr, message } = await comprar(formData);
     setLoading(false);
     if (success) {
-      setQrCode(qr ?? null);
+      setQrCode(qr ? JSON.stringify(qr) : null);
       setEmailSent(true);
+      Swal.fire({
+        icon: 'success',
+        title: '¡Listo!',
+        text: 'El correo con tu código QR se ha enviado correctamente. En caso de no llegar el correo puedes ver tus tickets en la sección de Mis Tickets.',
+      });
     } else {
-      alert(message ?? 'Error desconocido');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: message ?? 'Ocurrió un problema al procesar tu compra.'
+      });
     }
   };
 
+  const ticketDescriptions: Record<string, string> = {
+    entrada: 'Este ticket de Entrada te permite el acceso general al parque una vez.',
+    juegos: 'El ticket de Juegos incluye 20 juegos seleccionados dentro del parque.',
+    completo: 'El ticket Completo ofrece la entrada y el acceso ilimitado y todos los juegos disponibles.',
+  };
+
+  const getTicketInfo = (tipo: string) => ticketDescriptions[tipo] || '';
+
   return (
     <div className={styles.container}>
-      {/* <<< burbuja de puntos */}
       {showPointsNotif && (
         <div className={styles.pointsNotif} onClick={handleNotifClick}>
           <span>¡Ya puedes canjear tus puntos por un ticket!</span>
@@ -145,7 +188,6 @@ export default function Comprar() {
       </Head>
 
       <form onSubmit={handleSubmit} className={styles.form}>
-
         <h1>Datos del comprador</h1>
         <label htmlFor="nombre_completo">Nombre Completo:</label>
         <input
@@ -190,11 +232,32 @@ export default function Comprar() {
           <option value="completo">Completo</option>
         </select>
 
-        <label htmlFor="precio">Precio del Ticket (Q):</label>
+        <p className={styles.ticketInfo}>{getTicketInfo(tipoTicket)}</p>
+
+        <label htmlFor="precio">Precio Unitario (Q):</label>
         <input
           type="number"
           id="precio"
           value={precioUnitario}
+          disabled
+        />
+
+        <label htmlFor="cantidad">Cantidad de Tickets:</label>
+        <input
+          type="number"
+          id="cantidad"
+          name="cantidad"
+          value={cantidad}
+          onChange={handleCantidadChange}
+          min={1}
+          required
+        />
+
+        <label htmlFor="total">Total (Q):</label>
+        <input
+          type="number"
+          id="total"
+          value={total}
           disabled
         />
 
@@ -252,30 +315,7 @@ export default function Comprar() {
             {loading ? 'Comprando...' : 'Comprar'}
           </button>
         </div>
-
-        {qrCode && (
-          <div
-            className={styles.qrContainer}
-            style={{
-            marginTop: 50,
-            display: 'flex',           // <<< agregado
-            flexDirection: 'column',   // <<< opcional para que el título quede encima
-            alignItems: 'center'       // <<< centra horizontalmente
-         }}
-        >
-        <h2>Tu Código QR</h2>
-         <QRCode value={qrCode} size={200} />
-        </div>
-        )}
-
-        {/* <<< agregado: mensaje de éxito de correo */}
-        {emailSent && (
-          <div className={styles.successMessage}>
-            ✅ Se ha enviado un correo electrónico con tu código QR.
-          </div>
-        )}
-
       </form>
     </div>
-);
+  );
 }
