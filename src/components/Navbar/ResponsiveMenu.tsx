@@ -65,6 +65,9 @@ const ResponsiveMenu: React.FC<ResponsiveMenuProps> = ({ open, onClose }) => {
                             <Link href="/comprar" onClick={handleClose}>Comprar tickets</Link>
                         </li>
                         <li>
+                            <Link href="/taquilla" onClick={handleClose}>Taquilla</Link>
+                        </li>
+                        <li>
                             <Link href="/mis_tickets" onClick={handleClose}>Mis tickets</Link>
                         </li>
                         <li>
