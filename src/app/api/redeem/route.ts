@@ -87,6 +87,7 @@ export async function POST(req: Request) {
         <p>Has canjeado 50 puntos por un ticket de juegos gratuito.</p>
         <p>Sigue comprando para seguir Ganando con Oriente Magico 🎡.</p>
         <p>Tu ticket es válido para 20 usos.</p>
+        <p>Uso Exclusivo para Juegos.</p>
         <img src="cid:qrimage" alt="QR Ticket Juegos" width="200" height="200"/>
       `,
       attachments: [{
