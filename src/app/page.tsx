@@ -1,54 +1,131 @@
 "use client";
 
-import { Attraction } from "@/components/Attraction/Attraction";
-import styles from "./page.module.css";
-import { Button } from "@/components/Button/Button";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/utils/supabase/client";
+import { Attraction } from "@/components/Attraction/Attraction";
+import { Button } from "@/components/Button/Button";
+import styles from "./page.module.css";
+
+interface Atraccion {
+  id_atraccion: number;
+  nombre: string;
+  descripcion_atraccion: string;
+  juego_foto: string;
+}
 
 export default function Home() {
-
+  const [atracciones, setAtracciones] = useState<Atraccion[]>([]);
   const router = useRouter();
 
-  const handleClick = () => {
+  useEffect(() => {
+    const loadAtracciones = async () => {
+      const { data, error } = await supabase
+        .from("atraccion")   // ← sin genérico aquí
+        .select("id_atraccion, nombre, descripcion_atraccion, juego_foto");
+
+      if (error) {
+        console.error("Error cargando atracciones:", error.message);
+      } else {
+        // casteamos explícitamente el resultado:
+        setAtracciones(data as Atraccion[]);
+      }
+    };
+    loadAtracciones();
+  }, []);
+
+  const handleComprar = () => {
     router.push("/comprar");
   };
 
   return (
-    <div >
+    <div>
       <main className={styles.main}>
         {/* Section 1 */}
         <div className={styles.section1_container}>
-          <img src="/entrance-parque.png" className={styles.welcome_img} alt="Entrance" />
+          <img
+            src="/entrance-parque.png"
+            className={styles.welcome_img}
+            alt="Entrada"
+          />
           <div className={styles.card_container}>
             <h1 className={styles.section1_h1}>Bienvenido a Oriente Mágico</h1>
-            <h3 className={styles.section1_h3}>!Ven a disfrutar de una experiencia mágica!</h3>
-            <p className={styles.section1_p}>Descubre la hermosa cultura oriental de Guatemala en Oriente Mágico, donde cada momento es una nueva aventura con diversión garantizada. Ven y vive experiencias únicas con tus seres queridos.</p>
-            <Button text="Comprar Ticket" onClick={handleClick} type="button" />
+            <h3 className={styles.section1_h3}>
+              ¡Ven a disfrutar de una experiencia mágica!
+            </h3>
+            <p className={styles.section1_p}>
+              Descubre la hermosa cultura oriental de Guatemala en Oriente
+              Mágico, donde cada momento es una nueva aventura con diversión
+              garantizada.
+            </p>
+            <Button
+              text="Comprar Ticket"
+              onClick={handleComprar}
+              type="button"
+            />
           </div>
         </div>
 
         {/* Section 2 */}
         <div className={styles.section2_container}>
           <h1 className={styles.section2_h1}>Planifica Tu Visita</h1>
-          <p className={styles.section2_p}>Conoce nuestros horarios y prepárate para una jornada llena de diversión en Oriente Mágico.</p>
+          <p className={styles.section2_p}>
+            Conoce nuestros horarios y prepárate para una jornada llena de
+            diversión en Oriente Mágico.
+          </p>
           <dl className={styles.section2_dl}>
-            <div className={styles.section2_information}><dt><h1>Martes a Domingo</h1></dt><dd><p>Dias de operación</p></dd></div>
-            <div className={styles.section2_information}><dt><h1>9:00 AM</h1></dt><dd><p>Hora de apertura</p></dd></div>
-            <div className={styles.section2_information}><dt><h1>6:00 PM</h1></dt><dd><p>Hora de Cierre</p></dd></div>
-            <div className={styles.section2_information}><dt><h1>5</h1></dt><dd><p>Atracciones disponibles</p></dd></div>
+            <div className={styles.section2_information}>
+              <dt>
+                <h1>Martes a Domingo</h1>
+              </dt>
+              <dd>
+                <p>Días de operación</p>
+              </dd>
+            </div>
+            <div className={styles.section2_information}>
+              <dt>
+                <h1>9:00 AM</h1>
+              </dt>
+              <dd>
+                <p>Hora de apertura</p>
+              </dd>
+            </div>
+            <div className={styles.section2_information}>
+              <dt>
+                <h1>6:00 PM</h1>
+              </dt>
+              <dd>
+                <p>Hora de cierre</p>
+              </dd>
+            </div>
+            <div className={styles.section2_information}>
+              <dt>
+                <h1>{atracciones.length}</h1>
+              </dt>
+              <dd>
+                <p>Atracciones disponibles</p>
+              </dd>
+            </div>
           </dl>
         </div>
 
         {/* Section 3 */}
-        <div className={styles.section3_container}>
+        <section className={styles.section3_container}>
           <h1 className={styles.section3_h1}>Atracciones</h1>
-          <Attraction src_img="el-cactus-rotador.png" title="El Cactus Rotador" description="Un carrousel que va con la temática cálida y animada del parque de diversions. Disponible para personas de todas las edades. !Compra ya tu ticket!"/>
-          <Attraction src_img="el-toro-de-tierra-caliente.png" title="El Toro de Tierra Caliente" description="Un toro mecánico adornado con los colores de la vestimenta típica guatemalteca, para sentirte todo un vaquero zacapaneco. No apto para niños, !Compra ya tu ticket!"/>
-          <Attraction src_img="trenecito-fragua.jpeg" title="El Trenecito de la Fragua" description="Ven y dale una vuelta al parque en el Trenecito de la Fragua y siente el ambiente de oriente. Disponible para personas de todas las edades, !Compra ya tu ticket!"/>
-          <Attraction src_img="los-tuc-tucs-chocones.jpeg" title="Los Tuc-tucs chocones" description="Siéntete parte de la cultura oriental de Guatemala subiéndote a nuestros tuc-tucs chocones, donde podrás disfrutar de gratas experiencias. Los niños con supervisón de un adulto, !Compra ya tu ticket!"/>
-          <Attraction src_img="montana-la-union.jpeg" title="La Montaña de La Unión" description="¿Eres amante de lo extremo? Entonces tenemos lo ideal para ti, una montaña rusa que va alrededor de una réplica a escala de una de las altas montañas de La Unión, para que sientas la verdadera adrenalina. No apto para niños, !Compra ya tu ticket!"/>
-        </div>
+          <div className={styles.attractionGrid}>
+            {atracciones.map((a) => (
+              <Attraction
+                key={a.id_atraccion}
+                src_img={a.juego_foto}
+                title={a.nombre}
+                description={a.descripcion_atraccion}
+              />
+            ))}
+          </div>
+        </section>
       </main>
+
+      {/* Footer */}
       <footer className={styles.footer_container}>
         <h1 className={styles.footer_title}>CONTÁCTANOS</h1>
         <div className={styles.footer}>

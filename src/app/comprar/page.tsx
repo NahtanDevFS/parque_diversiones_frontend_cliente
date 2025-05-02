@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import Head from 'next/head';
-import QRCode from 'react-qr-code';
 import { comprar } from './actions';
 import Swal from 'sweetalert2';
 import { supabase } from '@/utils/supabase/client';
