@@ -199,13 +199,13 @@ export default function PerfilPage() {
           Cerrar Sesión
         </button>
 
-        <button
-          onClick={handleRedeem}
-          className="user_button_redeem"
-          disabled={!canRedeem || redeeming}
-        >
-          {redeeming ? 'Procesando...' : 'Canjear Puntos'}
-        </button>
+         <button
+           onClick={handleRedeem}
+           className={`user_button_redeem ${canRedeem ? 'highlight' : ''}`}
+           disabled={!canRedeem || redeeming}
+         >
+           {redeeming ? 'Procesando...' : 'Canjear Puntos'}
+       </button>
       </div>
 
       {qrCode && (

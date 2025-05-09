@@ -190,3 +190,93 @@
     grid-template-columns: repeat(4, 1fr); /* lg:grid-cols-4 -> Cuatro columnas */
   }
 }
+
+/* ————————————————————————————————————————————
+   Nuevo: Atracción / Mantenimiento con diseño “Trencito”
+   ———————————————————————————————————————————— */
+   .attractionSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .attractionContent {
+    flex: 1;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .attractionTitle {
+    font-size: 3rem;
+    margin: 0;
+    color: #000;
+  }
+  
+  .attractionDesc {
+    font-size: 1.25rem;
+    margin: 0;
+    color: #333;
+  }
+  
+  .attractionCta {
+    background-color: rgba(255, 157, 0, 1);
+    color: #000;
+    border: none;
+    border-radius: 1rem;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    width: fit-content;
+  }
+  .attractionCta:hover {
+    opacity: 0.9;
+  }
+  
+  .attractionImage {
+    flex-shrink: 0;
+    width: 40%;
+    max-width: 500px;
+    height: auto;
+    object-fit: cover;
+    border: 2rem solid rgba(255, 157, 0, 1);
+    border-radius: 2rem;
+  }
+  
+  /* Responsive: en pantallas <900px pasa a columna */
+  @media (max-width: 900px) {
+    .attractionSection {
+      flex-direction: column;
+      text-align: center;
+    }
+    .attractionContent {
+      max-width: 100%;
+    }
+    .attractionImage {
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+  }
+  
+  /* Responsivo: pasa a columna en pantallas <900px */
+  @media (max-width: 900px) {
+    .maintenanceSection {
+      flex-direction: column-reverse;
+      text-align: center;
+    }
+    .maintenanceSection_img {
+      width: 100%;
+      height: auto;
+      margin-top: 1.5rem;
+    }
+    .maintenanceSection_cta {
+      margin: 0 auto;
+    }
+  }
+  
