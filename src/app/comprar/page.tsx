@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,11 +14,9 @@ export default function Comprar() {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [cantidad, setCantidad] = useState<number>(1);
-
-  // notificación de puntos
   const [showPointsNotif, setShowPointsNotif] = useState(false);
 
-  // precios por tipo de ticket
+  // Precios por tipo de ticket
   const precios: Record<string, number> = {
     entrada: 50,
     juegos: 80,
@@ -26,16 +24,16 @@ export default function Comprar() {
   };
   const [tipoTicket, setTipoTicket] = useState<string>('entrada');
   const [precioUnitario, setPrecioUnitario] = useState<number>(precios['entrada']);
-  // total recalculado = cantidad * precio unitario
   const total = cantidad * precioUnitario;
 
+  // Datos de tarjeta
   const [tarjeta, setTarjeta] = useState({
     numero: '',
     vencimiento: '',
     cvv: '',
     titular: ''
   });
-  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [cardType, setCardType] = useState<string>('');
 
   useEffect(() => {
     const session = localStorage.getItem("supabaseSession");
@@ -44,7 +42,7 @@ export default function Comprar() {
       const id = parsed.user.id;
       setUserId(id);
 
-      // comprobar si tiene suficientes puntos
+      // comprobar puntos
       (async () => {
         const { data, error } = await supabase
           .from('cliente')
@@ -65,57 +63,85 @@ export default function Comprar() {
     }
   }, []);
 
+  // Formatea y detecta tipo de tarjeta
   const formatearNumeroTarjeta = (value: string) => {
     const limpio = value.replace(/\D/g, '').slice(0, 16);
+    // detectar tipo
+    if (/^4/.test(limpio)) setCardType('VISA');
+    else if (/^(5[1-5]|2[2-7])/.test(limpio)) setCardType('MASTERCARD');
+    else if (/^3[47]/.test(limpio)) setCardType('AMERICAN EXPRESS');
+    else setCardType('');
     return limpio.replace(/(.{4})/g, '$1 ').trim();
   };
 
-  const handleVencimientoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '').slice(0, 4);
-    if (value.length >= 3) value = `${value.slice(0, 2)}/${value.slice(2)}`;
-    setTarjeta({ ...tarjeta, vencimiento: value });
-  };
-
+  // Maneja cambio de número
   const handleNumeroTarjetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTarjeta({ ...tarjeta, numero: formatearNumeroTarjeta(e.target.value) });
   };
 
+  // Maneja cambio de vencimiento
+  const handleVencimientoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 3) v = `${v.slice(0, 2)}/${v.slice(2)}`;
+    setTarjeta({ ...tarjeta, vencimiento: v });
+  };
+
+  // Valida fecha de vencimiento no caducada
+  const isExpirationValid = (mmYY: string): boolean => {
+    if (!/^\d{2}\/\d{2}$/.test(mmYY)) return false;
+    const [mm, yy] = mmYY.split('/').map((s) => parseInt(s, 10));
+    if (mm < 1 || mm > 12) return false;
+    const year = 2000 + yy;
+    // último día del mes
+    const expDate = new Date(year, mm, 0, 23, 59, 59);
+    return expDate >= new Date();
+  };
+
+  // Otros manejadores
   const handleTipoTicketChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tipo = e.target.value;
     setTipoTicket(tipo);
     setPrecioUnitario(precios[tipo] ?? precios['entrada']);
   };
-
   const handleCantidadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10) || 1;
     setCantidad(val < 1 ? 1 : val);
   };
-
-  const handleNotifClick = () => {
-    router.push('/perfil_cliente');
-  };
+  const handleNotifClick = () => router.push('/perfil_cliente');
   const handleCloseNotif = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setShowPointsNotif(false);
   };
 
+  // Envío del formulario
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!userId) {
-      Swal.fire({
-        title: "Error",
-        text: "Necesitas crear una cuenta para comprar tickets",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+      Swal.fire("Error", "Necesitas crear una cuenta para comprar tickets", "error");
+      return;
+    }
+    // validar tarjeta
+    const numDigits = tarjeta.numero.replace(/\s/g, '');
+    if (!/^\d{13,16}$/.test(numDigits)) {
+      Swal.fire("Error", "Número de tarjeta inválido", "error");
+      return;
+    }
+    if (!cardType) {
+      Swal.fire("Error", "No se reconoce el tipo de tarjeta", "error");
+      return;
+    }
+    if (!isExpirationValid(tarjeta.vencimiento)) {
+      Swal.fire("Error", "Fecha de vencimiento inválida o vencida", "error");
+      return;
+    }
+    if (!/^\d{3,4}$/.test(tarjeta.cvv)) {
+      Swal.fire("Error", "CVV inválido", "error");
       return;
     }
 
+    // confirmación
     const form = e.currentTarget;
     const email = form.email.value;
-
-    // Confirmación con SweetAlert
     const { isConfirmed } = await Swal.fire({
       title: '¿Confirmar compra?',
       html: `
@@ -131,15 +157,14 @@ export default function Comprar() {
     });
     if (!isConfirmed) return;
 
+    // proceso de compra
     setLoading(true);
-    setEmailSent(false);
-
     const formData = new FormData(form);
     formData.append("id_cliente", userId);
     formData.append("cantidad", cantidad.toString());
     formData.append("precio", precioUnitario.toString());
     formData.append("metodopago", "1");
-    formData.append("numero_tarjeta", tarjeta.numero.replace(/\s/g, ''));
+    formData.append("numero_tarjeta", numDigits);
     formData.append("vencimiento", tarjeta.vencimiento);
     formData.append("cvv", tarjeta.cvv);
     formData.append("titular", tarjeta.titular);
@@ -148,29 +173,22 @@ export default function Comprar() {
 
     const { success, qrs: qr, message } = await comprar(formData);
     setLoading(false);
+
     if (success) {
       setQrCode(qr ? JSON.stringify(qr) : null);
-      setEmailSent(true);
-      Swal.fire({
-        icon: 'success',
-        title: '¡Listo!',
-        text: 'El correo con tu código QR se ha enviado correctamente. En caso de no llegar el correo puedes ver tus tickets en la sección de Mis Tickets.',
-      });
+      Swal.fire("¡Listo!", "El correo con tu código QR se ha enviado correctamente.", "success");
+      router.push('/mis_tickets');
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: message ?? 'Ocurrió un problema al procesar tu compra.'
-      });
+      Swal.fire("Error", message ?? "Ocurrió un problema al procesar tu compra.", "error");
     }
   };
 
+  // Descripciones de ticket
   const ticketDescriptions: Record<string, string> = {
     entrada: 'Este ticket de Entrada te permite el acceso general al parque una vez.',
     juegos: 'El ticket de Juegos incluye 20 juegos seleccionados dentro del parque.',
     completo: 'El ticket Completo ofrece la entrada y el acceso ilimitado y todos los juegos disponibles.',
   };
-
   const getTicketInfo = (tipo: string) => ticketDescriptions[tipo] || '';
 
   return (
@@ -182,86 +200,38 @@ export default function Comprar() {
         </div>
       )}
 
-      <Head>
-        <title>Compra de Ticket</title>
-      </Head>
+      <Head><title>Compra de Ticket</title></Head>
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <h1>Datos del comprador</h1>
         <label htmlFor="nombre_completo">Nombre Completo:</label>
-        <input
-          type="text"
-          id="nombre_completo"
-          name="nombre_completo"
-          placeholder="Juan Pérez"
-          required
-        />
+        <input type="text" id="nombre_completo" name="nombre_completo" placeholder="Juan Pérez" required />
 
         <label htmlFor="dpi">DPI:</label>
-        <input
-          type="text"
-          id="dpi"
-          name="dpi"
-          placeholder="1234567890101"
-          required
-          maxLength={13}
-        />
+        <input type="text" id="dpi" name="dpi" placeholder="1234567890101" required maxLength={13} />
 
         <label htmlFor="email">Correo Electrónico:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="correo@example.com"
-          required
-        />
+        <input type="email" id="email" name="email" placeholder="correo@example.com" required />
 
         <h1>Compra de Ticket</h1>
-
         <label htmlFor="tipo_ticket">Tipo de Ticket:</label>
-        <select
-          id="tipo_ticket"
-          name="tipo_ticket"
-          value={tipoTicket}
-          onChange={handleTipoTicketChange}
-          required
-        >
+        <select id="tipo_ticket" name="tipo_ticket" value={tipoTicket} onChange={handleTipoTicketChange} required>
           <option value="entrada">Entrada</option>
           <option value="juegos">Juegos</option>
           <option value="completo">Completo</option>
         </select>
-
         <p className={styles.ticketInfo}>{getTicketInfo(tipoTicket)}</p>
 
         <label htmlFor="precio">Precio Unitario (Q):</label>
-        <input
-          type="number"
-          id="precio"
-          value={precioUnitario}
-          disabled
-        />
+        <input type="number" id="precio" value={precioUnitario} disabled />
 
         <label htmlFor="cantidad">Cantidad de Tickets:</label>
-        <input
-          type="number"
-          id="cantidad"
-          name="cantidad"
-          value={cantidad}
-          onChange={handleCantidadChange}
-          min={1}
-          required
-        />
+        <input type="number" id="cantidad" name="cantidad" value={cantidad} onChange={handleCantidadChange} min={1} required />
 
         <label htmlFor="total">Total (Q):</label>
-        <input
-          type="number"
-          id="total"
-          value={total}
-          disabled
-        />
+        <input type="number" id="total" value={total} disabled />
 
         <h1>Datos de Tarjeta</h1>
-
         <label htmlFor="numero_tarjeta">Número de Tarjeta:</label>
         <input
           type="text"
@@ -273,8 +243,9 @@ export default function Comprar() {
           required
           maxLength={19}
         />
+        {cardType && <p className={styles.cardType}>Tipo de tarjeta: {cardType}</p>}
 
-        <label htmlFor="vencimiento">Fecha de Vencimiento:</label>
+        <label htmlFor="vencimiento">Fecha de Vencimiento (MM/YY):</label>
         <input
           type="text"
           id="vencimiento"
@@ -295,7 +266,7 @@ export default function Comprar() {
           onChange={(e) => setTarjeta({ ...tarjeta, cvv: e.target.value })}
           placeholder="123"
           required
-          maxLength={3}
+          maxLength={4}
         />
 
         <label htmlFor="titular">Nombre del Titular:</label>

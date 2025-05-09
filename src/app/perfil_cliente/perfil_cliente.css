@@ -101,3 +101,18 @@
         padding: 3%;
     }
 }
+
+/* define la animación pulse */
+@keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 10px 10px rgba(255, 215, 0, 0);
+    }
+  }
+  
+  /* aplica la animación solo cuando tenga 50+ puntos */
+  .user_button_redeem.highlight {
+    animation: pulse 1.5s infinite;
+  }

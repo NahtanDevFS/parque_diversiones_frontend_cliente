@@ -141,3 +141,40 @@
         height: 300px;
     }
 }
+
+/* estilo base del select */
+.filters select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem 1rem 0.5rem 0.8rem;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  /* ancho personalizado */
+  width: 180px; /* o usa: width: 12ch; */
+}
+
+/* flecha personalizada via SVG inline */
+.filters select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6H0z' fill='%23666'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.65rem;
+}
+
+/* hover y focus */
+.filters select:hover {
+  border-color: #999;
+}
+.filters select:focus {
+  outline: none;
+  border-color: #555;
+  box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.2);
+}

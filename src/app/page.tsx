@@ -12,27 +12,67 @@ interface Atraccion {
   nombre: string;
   descripcion_atraccion: string;
   juego_foto: string;
+  estado_atraccion: "Funcional" | "Mantenimiento" | string;
+  tiempo_reparacion: string | null;
 }
 
 export default function Home() {
   const [atracciones, setAtracciones] = useState<Atraccion[]>([]);
+  const [countdowns, setCountdowns] = useState<Record<number, string>>({});
   const router = useRouter();
 
+  // Carga de atracciones Funcional + Mantenimiento
   useEffect(() => {
-    const loadAtracciones = async () => {
+    async function load() {
       const { data, error } = await supabase
-        .from("atraccion")   // ← sin genérico aquí
-        .select("id_atraccion, nombre, descripcion_atraccion, juego_foto");
-
+        .from("atraccion")
+        .select(
+          "id_atraccion, nombre, descripcion_atraccion, juego_foto, estado_atraccion, tiempo_reparacion"
+        )
+        .in("estado_atraccion", ["Funcional", "Mantenimiento"]);
       if (error) {
         console.error("Error cargando atracciones:", error.message);
       } else {
-        // casteamos explícitamente el resultado:
         setAtracciones(data as Atraccion[]);
       }
-    };
-    loadAtracciones();
+    }
+    load();
   }, []);
+
+  // Contador para mantenimiento
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const nextCounts: Record<number, string> = {};
+
+      atracciones.forEach((a) => {
+        if (a.estado_atraccion === "Mantenimiento" && a.tiempo_reparacion) {
+          const target = new Date(a.tiempo_reparacion).getTime();
+          const diff = target - now;
+          if (diff <= 0) {
+            nextCounts[a.id_atraccion] = "Disponible pronto";
+          } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor(
+              (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            );
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            nextCounts[a.id_atraccion] = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+          }
+        }
+      });
+
+      setCountdowns(nextCounts);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [atracciones]);
+
+  const disponibles = atracciones.filter((a) => a.estado_atraccion === "Funcional");
+  const enMantenimiento = atracciones.filter(
+    (a) => a.estado_atraccion === "Mantenimiento"
+  );
 
   const handleComprar = () => {
     router.push("/comprar");
@@ -58,11 +98,7 @@ export default function Home() {
               Mágico, donde cada momento es una nueva aventura con diversión
               garantizada.
             </p>
-            <Button
-              text="Comprar Ticket"
-              onClick={handleComprar}
-              type="button"
-            />
+            <Button text="Comprar Ticket" onClick={handleComprar} type="button" />
           </div>
         </div>
 
@@ -100,29 +136,52 @@ export default function Home() {
             </div>
             <div className={styles.section2_information}>
               <dt>
-                <h1>{atracciones.length}</h1>
+                {/* Conteo de Funcional + Mantenimiento */}
+                <h1>{disponibles.length + enMantenimiento.length}</h1>
               </dt>
               <dd>
-                <p>Atracciones disponibles</p>
+                <p>Atracciones en el Parque</p>
               </dd>
             </div>
           </dl>
         </div>
 
-        {/* Section 3 */}
-        <section className={styles.section3_container}>
-          <h1 className={styles.section3_h1}>Atracciones</h1>
-          <div className={styles.attractionGrid}>
-            {atracciones.map((a) => (
+              {/* Section 3 */}
+      <section className={styles.section3_container}>
+        <h1 className={styles.section3_h1}>Atracciones</h1>
+        <div className={styles.attractionGrid}>
+          {/* 1) Disponibles */}
+          {disponibles.map((a) => (
+            <Attraction
+              key={a.id_atraccion}
+              src_img={a.juego_foto}
+              title={a.nombre}
+              description={a.descripcion_atraccion}
+              showButton={true}  
+            />
+          ))}
+
+          {/* 2) En Mantenimiento (reutilizamos la misma card) */}
+          {enMantenimiento.map((a) => (
               <Attraction
                 key={a.id_atraccion}
                 src_img={a.juego_foto}
-                title={a.nombre}
-                description={a.descripcion_atraccion}
+                title={`${a.nombre} (Mantenimiento)`}
+                // @ts-expect-error — validamos que la siguiente línea pueda fallar
+                description={
+                  <>
+                    Tiempo Estimado para Disponibilidad:
+                    <br />
+                    <span style={{ color: "red" }}>
+                      {countdowns[a.id_atraccion] ?? "Calculando..."}
+                    </span>
+                  </>
+                }
+                showButton={false}
               />
             ))}
-          </div>
-        </section>
+        </div>
+      </section>
       </main>
 
       {/* Footer */}
