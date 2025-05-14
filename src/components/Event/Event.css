@@ -1,65 +1,120 @@
 .event_container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10%;
-    width: 75%;
-    height: auto;
-    background-color: rgba(255, 186, 8, 0.5);
-    border-radius: 20px;
-    margin-bottom: 5%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;           /* Centra verticalmente imagen y texto */
+  justify-content: flex-start;   /* Texto e imagen juntos a la izquierda */
+  padding: 16px;                 /* Espacio interior en los 4 lados */
+  gap: 16px;                     /* Separación horizontal uniforme */
+  margin: 0.5% auto 0.5%;        /* Márgenes superior e inferior reducidos */
+  width: 80%;                    /* Ancho al 80% del contenedor padre */
+  background-color: rgba(255, 186, 8, 0.5);
+  border-radius: 24px;           /* Curvas pronunciadas */
+}
+
+.event_container:first-child {
+  margin-top: 6%;                /* Margen extra solo en la primera tarjeta */
 }
 
 .event_card_container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;       /* Centra verticalmente el bloque de texto */
+  gap: 8px;                      /* Hueco uniforme entre líneas de texto */
+  flex: 1;                       /* Ocupa todo el espacio sobrante */
+  margin: 1%;                    /* Un pequeño margen alrededor */
+  padding: 40px;                 /* Espacio interior amplio en el bloque de texto */
 }
 
-.event_title, .event_fecha, .event_description, .event_hora_inicio, .event_hora_final {
-    margin-bottom: 1%;
+.event_state {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #222;
+}
+
+.event_title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #222;
 }
 
 .event_description {
-    font-size: 20px;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #222;
 }
 
-.event_card_container {
-    margin: 2% 5% 2% 5%;
+.event_lugar,
+.event_costo,
+.event_fecha,
+.event_hora_inicio,
+.event_hora_final {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #222;
+}
 
+.event_lugar span,
+.event_fecha span,
+.event_hora_inicio span,
+.event_hora_final span {
+  font-weight: 600;
+}
+
+.event_costo {
+  margin: 0;
+  font-weight: 700;
+  color: rgba(255, 115, 0, 0.9);
+}
+
+.event_costo--free {
+  color: #388e3c;
+}
+
+.event_img_container {
+  flex-shrink: 0;
+  padding: 0 16px;               /* Mismo padding horizontal que el texto */
+  display: flex;
+  align-items: center;
+  justify-content: center;       /* Centra la imagen dentro de su caja */
 }
 
 .event_img {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 256px;
-    height: 256px;
-    border-radius: 1em;
-    margin-right: 10%;
-    margin-bottom: 3%;
-    margin-top: 3%;
+  width: 250px;                  /* Imagen más grande */
+  height: 250px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-right: 4%;
+  margin-bottom: 3%;
+  margin-top: 3%
 }
 
 @media (max-width: 900px) {
-    .event_container {
-        margin-top: 25%;
-        width: 80%;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
+  .event_container {
+    flex-direction: column;
+    width: 90%;
+    margin: 3% auto;
+    padding: 16px;
+    gap: 12px;
+  }
 
-    .event_img {
-        width: 256px;
-        height: 256px;
-        border-radius: 1em;
-        margin-right: 0;
-        margin-bottom: 5%;
-        margin-top: 5%;
-    }
+  .event_container:first-child {
+  margin-top: 20%;                /* Margen extra solo en la primera tarjeta */
+}
 
-    .event_title, .event_fecha, .event_description, .event_hora_inicio, .event_hora_final {
-        margin-bottom: 3%;
-    }
+  .event_card_container {
+    justify-content: flex-start; /* Texto al tope en móvil */
+    padding: 16px;                /* Reduce padding para pantallas pequeñas */
+  }
+
+  .event_img {
+    width: 100%;
+    height: auto;
+    margin-right: auto;
+    margin-top: 16px;
+  }
 }
