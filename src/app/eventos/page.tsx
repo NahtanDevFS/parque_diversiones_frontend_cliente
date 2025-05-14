@@ -1,9 +1,9 @@
 "use client";
 
-import { Event } from '@/components/Event/Event';
-import { supabase } from './actions';
-import React, { useEffect, useState } from 'react';
-import styles from './page.module.css';
+import { Event } from "@/components/Event/Event";
+import { supabase } from "./actions";
+import React, { useEffect, useState } from "react";
+import styles from "./page.module.css";
 
 interface Evento {
   id_evento: number;
@@ -13,16 +13,17 @@ interface Evento {
   nombre_evento: string;
   descripcion_evento: string;
   imagen_evento: string;
+  lugar: string;    // ← agregamos
+  costo: number;    // ← agregamos
 }
 
 const Page = () => {
-
-
   const [eventos, setEventos] = useState<Evento[]>([]);
 
   useEffect(() => {
     const fetchEventos = async () => {
-      const { data, error } = await supabase.from('evento').select('*');
+      // Como ya usas .select('*'), traerá 'lugar' y 'costo' si existen en la tabla
+      const { data, error } = await supabase.from("evento").select("*");
       if (error) console.error(error);
       else setEventos(data || []);
     };
@@ -30,39 +31,38 @@ const Page = () => {
   }, []);
 
   const calculateStateEvent = (eventDate: string) => {
-
-    // Crear fecha actual en la zona horaria local
     const fechaActual = new Date();
-    fechaActual.setHours(0, 0, 0, 0); // Establecer hora a medianoche local
+    fechaActual.setHours(0, 0, 0, 0);
 
-    // Convertir la fecha del evento a la zona horaria local
-    const [year, month, day] = eventDate.split('-').map(Number);
-    const fechaEspecifica = new Date(year, month - 1, day); // Los meses en JS son 0-based
-    fechaEspecifica.setHours(0, 0, 0, 0); // Asegurar medianoche local
+    const [year, month, day] = eventDate.split("-").map(Number);
+    const fechaEspecifica = new Date(year, month - 1, day);
+    fechaEspecifica.setHours(0, 0, 0, 0);
 
-    console.log("Fecha actual:", fechaActual);
-    console.log("Fecha evento:", fechaEspecifica);
-
-    if (fechaActual < fechaEspecifica) {
-      return "Próximamente";
-    } else if (fechaActual.getTime() === fechaEspecifica.getTime()) {
-      return "¡Es hoy!";
-    } else {
-      return "Ya pasó";
-    }
-  }
-
+    if (fechaActual < fechaEspecifica) return "Próximamente";
+    if (fechaActual.getTime() === fechaEspecifica.getTime()) return "¡Es hoy!";
+    return "Ya pasó";
+  };
 
   return (
     <div>
       <div className={styles.eventos_container}>
-        {eventos?.map((evento) => (
-          <Event key={evento.id_evento} src_img={evento.imagen_evento} state={calculateStateEvent(evento.fecha_evento)} title={evento.nombre_evento} description={evento.descripcion_evento}
-          fecha={evento.fecha_evento} hora_inicio={evento.hora_apertura} hora_final={evento.hora_cierre}/>
+        {eventos.map((evento) => (
+          <Event
+            key={evento.id_evento}
+            src_img={evento.imagen_evento}
+            state={calculateStateEvent(evento.fecha_evento)}
+            title={evento.nombre_evento}
+            description={evento.descripcion_evento}
+            fecha={evento.fecha_evento}
+            hora_inicio={evento.hora_apertura}
+            hora_final={evento.hora_cierre}
+            lugar={evento.lugar}         // ← pasamos lugar
+            costo={evento.costo.toString()}         // ← convertimos a string
+          />
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
