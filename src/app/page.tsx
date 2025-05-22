@@ -58,7 +58,7 @@ export default function Home() {
             );
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            nextCounts[a.id_atraccion] = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            nextCounts[a.id_atraccion] = `${days}d ${hours} h`;
           }
         }
       });
@@ -166,14 +166,13 @@ export default function Home() {
               <Attraction
                 key={a.id_atraccion}
                 src_img={a.juego_foto}
-                title={`${a.nombre} (Mantenimiento)`}
+                title={`${a.nombre} (Fuera de Servicio)`}
                 // @ts-expect-error — validamos que la siguiente línea pueda fallar
                 description={
                   <>
-                    Tiempo Estimado para Disponibilidad:
-                    <br />
+                    Estara Disponible en:   
                     <span style={{ color: "red" }}>
-                      {countdowns[a.id_atraccion] ?? "Calculando..."}
+                      {"  " + (countdowns[a.id_atraccion] ?? "Calculando...")}
                     </span>
                   </>
                 }
